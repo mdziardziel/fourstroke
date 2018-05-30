@@ -26,13 +26,28 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <glm/gtc/matrix_transform.hpp>
 #include <stdlib.h>
 #include <stdio.h>
-#include "constants.h"
-#include "allmodels.h"
+#include "constants.hpp"
+#include "class_template.hpp"
 
 using namespace glm;
 
 float aspect=1;
 float speed=3.14; //prêdkoœæ k¹towa obrotu w radianach na sekundê
+
+//deklarujemy obiekty Template
+Template *mushroom;
+
+void initObjects(){
+    //inicjalzujemy obiekty Template (wgrywamy tekstury, kolory itp)
+    mushroom = new Template("objects\\mushroom.obj");
+}
+
+void removeObjects(){
+    //usuwamy obiekty
+    delete mushroom;
+}
+
+
 
 //Framebuffer size change event processing
 void windowResize(GLFWwindow* window, int width, int height) {
@@ -86,7 +101,7 @@ void drawScene(GLFWwindow* window,float angle) {
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	//2. Narysuj obiekt
 	glColor3d(0,1,0);
-	Models::torus.drawSolid();
+	mushroom -> drawSolid();
     //Stop
 
 	//Koniec
@@ -95,6 +110,8 @@ void drawScene(GLFWwindow* window,float angle) {
 
 int main(void)
 {
+    initObjects();//inicjujemy obiekty
+
 	GLFWwindow* window; //WskaŸnik na obiekt reprezentuj¹cy okno
 
 	glfwSetErrorCallback(error_callback);//Zarejestruj procedurê obs³ugi b³êdów
@@ -138,4 +155,6 @@ int main(void)
 	glfwDestroyWindow(window); //Usuñ kontekst OpenGL i okno
 	glfwTerminate(); //Zwolnij zasoby zajête przez GLFW
 	exit(EXIT_SUCCESS);
+
+	removeObjects();//usuwamy obiekty
 }

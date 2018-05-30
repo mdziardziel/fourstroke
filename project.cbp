@@ -43,13 +43,13 @@
 			<Add directory="glfw/lib-mingw" />
 			<Add directory="glew/lib/Release/Win32" />
 		</Linker>
-		<Unit filename="allmodels.h" />
-		<Unit filename="constants.h" />
+		<Unit filename="class_template.cpp" />
+		<Unit filename="class_template.hpp" />
 		<Unit filename="main.cpp" />
-		<Unit filename="model.cpp" />
-		<Unit filename="model.h" />
-		<Unit filename="torus.cpp" />
-		<Unit filename="torus.h" />
+		<Unit filename="objloader.cpp" />
+		<Unit filename="objloader.hpp" />
+		<Unit filename="rod.cpp" />
+		<Unit filename="rod.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
