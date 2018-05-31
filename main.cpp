@@ -36,15 +36,21 @@ float speed=3.14; //prêdkoœæ k¹towa obrotu w radianach na sekundê
 
 //deklarujemy obiekty Template
 Template *mushroom;
+Template *rod;
+Template *piston;
 
 void initObjects(){
     //inicjalzujemy obiekty Template (wgrywamy tekstury, kolory itp)
     mushroom = new Template("objects\\mushroom.obj");
+    rod = new Template("objects\\rod.obj");
+    piston = new Template("objects\\piston.obj");
 }
 
 void removeObjects(){
     //usuwamy obiekty
     delete mushroom;
+    delete rod;
+    delete piston;
 }
 
 
@@ -82,7 +88,7 @@ void drawScene(GLFWwindow* window,float angle) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyœæ bufor kolorów i bufor g³êbokoœci
 
 	//Przygotuj macierze rzutowania i widoku dla renderowanego obrazu
-	mat4 P=perspective(50.0f*PI/180.0f, aspect, 1.0f, 50.0f); //Wylicz macierz rzutowania
+	mat4 P= perspective(50.0f*PI/180.0f,1.0f,1.0f, 50.0f); //Wylicz macierz rzutowania
 
 	mat4 V=lookAt( //Wylicz macierz widoku
 	vec3(0.0f,0.0f,-5.0f),
@@ -96,14 +102,27 @@ void drawScene(GLFWwindow* window,float angle) {
 
     //Rysowanie pojedynczego modelu
     //1. Oblicz i za³aduj macierz modelu
-	mat4 M=mat4(1.0f); //Wylicz macierz modelu
-	M=rotate(M,angle,vec3(0.0f,1.0f,0.0f));
+    mat4 M,R,T,S,I;
+    I = mat4(1);
+    R = rotate(I,0*PI/180,glm::vec3(1,1,1));
+    T = translate(I,vec3(0,-1,0));
+    S = scale(I,vec3(0.3,0.3,0.3));
+	M=R*T*S;
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	//2. Narysuj obiekt
-	glColor3d(0,1,0);
-	mushroom -> drawSolid();
+	//glColor3d(0,1,0);
+	rod -> drawSolid();
     //Stop
+/*
+    P=perspective(120.0f*PI/180.0f, aspect, 1.0f, 10.0f); //Wylicz macierz rzutowania
+	M=mat4(1.0f); //Wylicz macierz modelu
+	M=rotate(M,angle,vec3(0.0f,1.0f,0.0f));
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 
+
+    //glColor3d(1,0,0);
+	piston -> drawSolid();
+*/
 	//Koniec
 	glfwSwapBuffers(window);
 }

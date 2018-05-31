@@ -45,11 +45,10 @@
 		</Linker>
 		<Unit filename="class_template.cpp" />
 		<Unit filename="class_template.hpp" />
+		<Unit filename="constants.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="objloader.cpp" />
 		<Unit filename="objloader.hpp" />
-		<Unit filename="rod.cpp" />
-		<Unit filename="rod.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

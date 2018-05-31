@@ -581,7 +581,7 @@
 1526679709 c:\users\michal\desktop\proj\project\allmodels.h
 	"torus.h"
 
-1527666993 source:c:\users\michal\documents\github\engine\main.cpp
+1527761737 source:c:\users\michal\documents\github\engine\main.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<glm/glm.hpp>
@@ -589,8 +589,8 @@
 	<glm/gtc/matrix_transform.hpp>
 	<stdlib.h>
 	<stdio.h>
-	"constants.h"
-	"allmodels.h"
+	"constants.hpp"
+	"class_template.hpp"
 
 1526677080 c:\users\michal\documents\github\engine\glew\include\gl\glew.h
 	<stddef.h>
@@ -1208,11 +1208,15 @@
 1527331538 source:c:\users\michal\documents\github\engine\torus.cpp
 	"torus.h"
 
-1527669930 source:c:\users\michal\documents\github\engine\class_template.cpp
+1527761749 source:c:\users\michal\documents\github\engine\class_template.cpp
 	"objloader.hpp"
 	"class_template.hpp"
 
 1527670763 c:\users\michal\documents\github\engine\class_template.hpp
+	<GLFW/glfw3.h>
+	"class_template.hpp"
+
+1527670853 c:\users\michal\documents\github\engine\constants.hpp
 	<GLFW/glfw3.h>
 	"class_template.hpp"
 
