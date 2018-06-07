@@ -103,7 +103,7 @@ void move_circle(float &x, float &y, bool &course_x, bool &course_y){
         y = y - spd;
     }
 
-    std::cout<<x<<" "<<y<<std::endl;
+    //std::cout<<x<<" "<<y<<std::endl;
     if(x >= 1.0)
         course_x = false;
     if(x <= -1.0)
@@ -170,16 +170,25 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	//glColor3d(0,1,0);
 	rod -> drawSolid();
     //Stop
-/*
-    P=perspective(120.0f*PI/180.0f, aspect, 1.0f, 10.0f); //Wylicz macierz rzutowania
-	M=mat4(1.0f); //Wylicz macierz modelu
-	M=rotate(M,angle,vec3(0.0f,1.0f,0.0f));
+
+    //P=perspective(120.0f*PI/180.0f, aspect, 1.0f, 10.0f); //Wylicz macierz rzutowania
+    //Rysowanie pojedynczego modelu
+    //1. Oblicz i za³aduj macierz modelu
+
+    I = mat4(1);
+    //R = rotate(I,dane_f[0]/180,glm::vec3(1,1,1));
+    T = translate(I,vec3(0,dane_f[1]*0.2 +1,0));
+    S = scale(I,vec3(0.3,0.3,0.3));
+	//R=rotate(R,dane_f[1]*180,vec3(0.0f,1.0f,0.0f));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	M=R*T*S;
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 
 
     //glColor3d(1,0,0);
 	piston -> drawSolid();
-*/
+
 	//Koniec
 	glfwSwapBuffers(window);
 }
