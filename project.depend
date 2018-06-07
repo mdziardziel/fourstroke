@@ -581,7 +581,7 @@
 1526679709 c:\users\michal\desktop\proj\project\allmodels.h
 	"torus.h"
 
-1527761737 source:c:\users\michal\documents\github\engine\main.cpp
+1528380249 source:c:\users\michal\documents\github\engine\main.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<glm/glm.hpp>
@@ -591,6 +591,7 @@
 	<stdio.h>
 	"constants.hpp"
 	"class_template.hpp"
+	<iostream>
 
 1526677080 c:\users\michal\documents\github\engine\glew\include\gl\glew.h
 	<stddef.h>

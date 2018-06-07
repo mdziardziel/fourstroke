@@ -1,19 +1,19 @@
 /*
-Niniejszy program jest wolnym oprogramowaniem; mo¿esz go
-rozprowadzaæ dalej i / lub modyfikowaæ na warunkach Powszechnej
-Licencji Publicznej GNU, wydanej przez Fundacjê Wolnego
-Oprogramowania - wed³ug wersji 2 tej Licencji lub(wed³ug twojego
-wyboru) którejœ z póŸniejszych wersji.
+Niniejszy program jest wolnym oprogramowaniem; moÂ¿esz go
+rozprowadzaÃ¦ dalej i / lub modyfikowaÃ¦ na warunkach Powszechnej
+Licencji Publicznej GNU, wydanej przez FundacjÃª Wolnego
+Oprogramowania - wedÂ³ug wersji 2 tej Licencji lub(wedÂ³ug twojego
+wyboru) ktÃ³rejÅ“ z pÃ³Å¸niejszych wersji.
 
-Niniejszy program rozpowszechniany jest z nadziej¹, i¿ bêdzie on
-u¿yteczny - jednak BEZ JAKIEJKOLWIEK GWARANCJI, nawet domyœlnej
-gwarancji PRZYDATNOŒCI HANDLOWEJ albo PRZYDATNOŒCI DO OKREŒLONYCH
-ZASTOSOWAÑ.W celu uzyskania bli¿szych informacji siêgnij do
+Niniejszy program rozpowszechniany jest z nadziejÂ¹, iÂ¿ bÃªdzie on
+uÂ¿yteczny - jednak BEZ JAKIEJKOLWIEK GWARANCJI, nawet domyÅ“lnej
+gwarancji PRZYDATNOÅ’CI HANDLOWEJ albo PRZYDATNOÅ’CI DO OKREÅ’LONYCH
+ZASTOSOWAÃ‘.W celu uzyskania bliÂ¿szych informacji siÃªgnij do
 Powszechnej Licencji Publicznej GNU.
 
-Z pewnoœci¹ wraz z niniejszym programem otrzyma³eœ te¿ egzemplarz
+Z pewnoÅ“ciÂ¹ wraz z niniejszym programem otrzymaÂ³eÅ“ teÂ¿ egzemplarz
 Powszechnej Licencji Publicznej GNU(GNU General Public License);
-jeœli nie - napisz do Free Software Foundation, Inc., 59 Temple
+jeÅ“li nie - napisz do Free Software Foundation, Inc., 59 Temple
 Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 */
 
@@ -28,11 +28,14 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <stdio.h>
 #include "constants.hpp"
 #include "class_template.hpp"
+#include <iostream>
 
 using namespace glm;
 
+
 float aspect=1;
-float speed=3.14; //prêdkoœæ k¹towa obrotu w radianach na sekundê
+float speed=3.14; //prÃªdkoÅ“Ã¦ kÂ¹towa obrotu w radianach na sekundÃª
+float speed_x = 0, speed_y = 0;
 
 //deklarujemy obiekty Template
 Template *mushroom;
@@ -61,31 +64,80 @@ void windowResize(GLFWwindow* window, int width, int height) {
 	aspect=(float)width/(float)height; //Compute aspect ratio of width to height of the window
 }
 
-//Procedura obs³ugi b³êdów
+//Procedura obsÂ³ugi bÂ³ÃªdÃ³w
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
 }
 
-//Procedura inicjuj¹ca
+
+
+//Procedura obsÅ‚ugi klawiatury
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
+    if (action == GLFW_PRESS) {
+        if (key == GLFW_KEY_LEFT) speed_y=PI/2;
+        if (key == GLFW_KEY_RIGHT) speed_y=-PI/2;
+        if (key == GLFW_KEY_UP) speed_x=PI/2;
+        if (key == GLFW_KEY_DOWN) speed_x=-PI/2;
+    }
+
+    if (action == GLFW_RELEASE) {
+        if (key == GLFW_KEY_LEFT) speed_y=0;
+        if (key == GLFW_KEY_RIGHT) speed_y=0;
+        if (key == GLFW_KEY_UP) speed_x=0;
+        if (key == GLFW_KEY_DOWN) speed_x=0;
+    }
+}
+
+
+void move_circle(float &x, float &y, bool &course_x, bool &course_y){
+    float spd = 0.05;
+    if(course_x){
+        x = x+ spd;
+    }else{
+        x = x - spd;
+    }
+
+    if(course_y){
+        y = y+ spd;
+    }else{
+        y = y - spd;
+    }
+
+    std::cout<<x<<" "<<y<<std::endl;
+    if(x >= 1.0)
+        course_x = false;
+    if(x <= -1.0)
+        course_x = true;
+
+    if(y >= 1.0)
+        course_y = false;
+    if(y <= -1.0)
+        course_y = true;
+}
+
+
+//Procedura inicjujÂ¹ca
 void initOpenGLProgram(GLFWwindow* window) {
-	//************Tutaj umieszczaj kod, który nale¿y wykonaæ raz, na pocz¹tku programu************
+	//************Tutaj umieszczaj kod, ktÃ³ry naleÂ¿y wykonaÃ¦ raz, na poczÂ¹tku programu************
 
-	glfwSetFramebufferSizeCallback(window, windowResize);//Zarejestruj procedurê obs³ugi zmiany rozmiaru ekranu.
+	glfwSetFramebufferSizeCallback(window, windowResize);//Zarejestruj procedurÃª obsÂ³ugi zmiany rozmiaru ekranu.
 
-    glClearColor(0,0,0,1); //Ustaw kolor czyszczenia bufora kolorów na czarno
-    glEnable(GL_LIGHTING); //W³¹cz cieniowanie
-    glEnable(GL_LIGHT0); //W³¹cz œwia³o numer 0
-    glEnable(GL_DEPTH_TEST); //W³¹cz bufor g³êbokoœci
-    glEnable(GL_COLOR_MATERIAL); //W³¹cz ustawianie koloru materia³u przez polecenia glColor
+	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurÄ™ obsÅ‚ugi klawiatury
+
+    glClearColor(0,0,0,1); //Ustaw kolor czyszczenia bufora kolorÃ³w na czarno
+    glEnable(GL_LIGHTING); //WÂ³Â¹cz cieniowanie
+    glEnable(GL_LIGHT0); //WÂ³Â¹cz Å“wiaÂ³o numer 0
+    glEnable(GL_DEPTH_TEST); //WÂ³Â¹cz bufor gÂ³ÃªbokoÅ“ci
+    glEnable(GL_COLOR_MATERIAL); //WÂ³Â¹cz ustawianie koloru materiaÂ³u przez polecenia glColor
 }
 
 
 
 
-//Procedura rysuj¹ca zawartoœæ sceny
-void drawScene(GLFWwindow* window,float angle) {
-	//************Tutaj umieszczaj kod rysuj¹cy obraz******************
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyœæ bufor kolorów i bufor g³êbokoœci
+//Procedura rysujÂ¹ca zawartoÅ“Ã¦ sceny
+void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, bool *dane_b) {
+	//************Tutaj umieszczaj kod rysujÂ¹cy obraz******************
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //WyczyÅ“Ã¦ bufor kolorÃ³w i bufor gÂ³ÃªbokoÅ“ci
 
 	//Przygotuj macierze rzutowania i widoku dla renderowanego obrazu
 	mat4 P= perspective(50.0f*PI/180.0f,1.0f,1.0f, 50.0f); //Wylicz macierz rzutowania
@@ -95,20 +147,25 @@ void drawScene(GLFWwindow* window,float angle) {
 	vec3(0.0f,0.0f,0.0f),
 	vec3(0.0f,1.0f,0.0f));
 
-	glMatrixMode(GL_PROJECTION); //W³¹cz tryb modyfikacji macierzy rzutowania
+	glMatrixMode(GL_PROJECTION); //WÂ³Â¹cz tryb modyfikacji macierzy rzutowania
 	glLoadMatrixf(value_ptr(P)); //Skopiuj macierz rzutowania
-	glMatrixMode(GL_MODELVIEW); //W³¹cz tryb modyfikacji macierzy model-widok. UWAGA! Macierz ta bêdzie ³adowana przed narysowaniem ka¿dego modelu
+	glMatrixMode(GL_MODELVIEW); //WÂ³Â¹cz tryb modyfikacji macierzy model-widok. UWAGA! Macierz ta bÃªdzie Â³adowana przed narysowaniem kaÂ¿dego modelu
 
 
     //Rysowanie pojedynczego modelu
-    //1. Oblicz i za³aduj macierz modelu
-    mat4 M,R,T,S,I;
+    //1. Oblicz i zaÂ³aduj macierz modelu
+    mat4 M,R,T,S,I,R2;
     I = mat4(1);
-    R = rotate(I,0*PI/180,glm::vec3(1,1,1));
-    T = translate(I,vec3(0,-1,0));
+    //R = rotate(I,dane_f[0]/180,glm::vec3(1,1,1));
+    T = translate(I,vec3(dane_f[0]*0.2,dane_f[1]*0.2 -1,0));
     S = scale(I,vec3(0.3,0.3,0.3));
+	//R=rotate(R,dane_f[1]*180,vec3(0.0f,1.0f,0.0f));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	R=rotate(R,dane_f[0]/3,vec3(0,0,1));
 	M=R*T*S;
-	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+
+	glLoadMatrixf(value_ptr(V*M)); //ZaÂ³aduj macierz model-widok
 	//2. Narysuj obiekt
 	//glColor3d(0,1,0);
 	rod -> drawSolid();
@@ -117,7 +174,7 @@ void drawScene(GLFWwindow* window,float angle) {
     P=perspective(120.0f*PI/180.0f, aspect, 1.0f, 10.0f); //Wylicz macierz rzutowania
 	M=mat4(1.0f); //Wylicz macierz modelu
 	M=rotate(M,angle,vec3(0.0f,1.0f,0.0f));
-	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	glLoadMatrixf(value_ptr(V*M)); //ZaÂ³aduj macierz model-widok
 
 
     //glColor3d(1,0,0);
@@ -131,48 +188,60 @@ int main(void)
 {
     initObjects();//inicjujemy obiekty
 
-	GLFWwindow* window; //WskaŸnik na obiekt reprezentuj¹cy okno
+	GLFWwindow* window; //WskaÅ¸nik na obiekt reprezentujÂ¹cy okno
 
-	glfwSetErrorCallback(error_callback);//Zarejestruj procedurê obs³ugi b³êdów
+	glfwSetErrorCallback(error_callback);//Zarejestruj procedurÃª obsÂ³ugi bÂ³ÃªdÃ³w
 
-	if (!glfwInit()) { //Zainicjuj bibliotekê GLFW
-		fprintf(stderr, "Nie mo¿na zainicjowaæ GLFW.\n");
+	if (!glfwInit()) { //Zainicjuj bibliotekÃª GLFW
+		fprintf(stderr, "Nie moÂ¿na zainicjowaÃ¦ GLFW.\n");
 		exit(EXIT_FAILURE);
 	}
 
-	window = glfwCreateWindow(500, 500, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
+	window = glfwCreateWindow(500, 500, "OpenGL", NULL, NULL);  //UtwÃ³rz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 
-	if (!window) //Je¿eli okna nie uda³o siê utworzyæ, to zamknij program
+	if (!window) //JeÂ¿eli okna nie udaÂ³o siÃª utworzyÃ¦, to zamknij program
 	{
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 
-	glfwMakeContextCurrent(window); //Od tego momentu kontekst okna staje siê aktywny i polecenia OpenGL bêd¹ dotyczyæ w³aœnie jego.
-	glfwSwapInterval(1); //Czekaj na 1 powrót plamki przed pokazaniem ukrytego bufora
+	glfwMakeContextCurrent(window); //Od tego momentu kontekst okna staje siÃª aktywny i polecenia OpenGL bÃªdÂ¹ dotyczyÃ¦ wÂ³aÅ“nie jego.
+	glfwSwapInterval(1); //Czekaj na 1 powrÃ³t plamki przed pokazaniem ukrytego bufora
 
 	GLenum err;
-	if ((err=glewInit()) != GLEW_OK) { //Zainicjuj bibliotekê GLEW
-		fprintf(stderr, "Nie mo¿na zainicjowaæ GLEW: %s\n", glewGetErrorString(err));
+	if ((err=glewInit()) != GLEW_OK) { //Zainicjuj bibliotekÃª GLEW
+		fprintf(stderr, "Nie moÂ¿na zainicjowaÃ¦ GLEW: %s\n", glewGetErrorString(err));
 		exit(EXIT_FAILURE);
 	}
 
-	initOpenGLProgram(window); //Operacje inicjuj¹ce
+	initOpenGLProgram(window); //Operacje inicjujÂ¹ce
 
-	float angle=0; //Aktualny k¹t obrotu obiektu
+	float angle=0; //Aktualny kÂ¹t obrotu obiektu
 	glfwSetTime(0); //Wyzeruj licznik czasu
-	//G³ówna pêtla
-	while (!glfwWindowShouldClose(window)) //Tak d³ugo jak okno nie powinno zostaæ zamkniête
+
+	float angle_x = 0, angle_y = 0;
+	float rod_x = 0, rod_y = -1;
+	bool rod_cx = true, rod_cy = true;
+	float dane_f[2];
+	bool dane_b[2];
+	//GÂ³Ã³wna pÃªtla
+	while (!glfwWindowShouldClose(window)) //Tak dÂ³ugo jak okno nie powinno zostaÃ¦ zamkniÃªte
 	{
-	    angle+=speed*glfwGetTime(); //Powiêksz k¹t obrotu o szybkoœæ obrotu razy czas, który min¹³ od poprzedniej klatki
-	    glfwSetTime(0); //Wyzeruj licznik czasu
-		drawScene(window,angle); //Wykonaj procedurê rysuj¹c¹
-		glfwPollEvents(); //Wykonaj procedury callback w zaleznoœci od zdarzeñ jakie zasz³y.
+	    move_circle(rod_x, rod_y, rod_cx, rod_cy);
+        dane_f[0] = rod_x;
+        dane_f[1] = rod_y;
+        dane_b[0] = rod_cx;
+        dane_b[1] = rod_cy;
+	    angle_x+=speed_x*glfwGetTime(); //Oblicz przyrost kÄ…ta obrotu i zwiÄ™ksz aktualny kÄ…t
+        angle_y+=speed_y*glfwGetTime(); //Oblicz przyrost kÄ…ta obrotu i zwiÄ™ksz aktualny kÄ…t
+	    glfwSetTime(0); //Wyzeruj timer
+		drawScene(window,angle_x,angle_y, dane_f, dane_b); //Wykonaj procedurÄ™ rysujÄ…cÄ…
+		glfwPollEvents(); //Wykonaj procedury callback w zaleznoÅ›ci od zdarzeÅ„ jakie zaszÅ‚y.
 	}
 
-	glfwDestroyWindow(window); //Usuñ kontekst OpenGL i okno
-	glfwTerminate(); //Zwolnij zasoby zajête przez GLFW
+	glfwDestroyWindow(window); //UsuÃ± kontekst OpenGL i okno
+	glfwTerminate(); //Zwolnij zasoby zajÃªte przez GLFW
 	exit(EXIT_SUCCESS);
 
 	removeObjects();//usuwamy obiekty
