@@ -43,6 +43,7 @@ Template *rod;
 Template *piston;
 Template *glow;
 Template *valve;
+Template *crankshaft;
 
 void initObjects(){
     //inicjalzujemy obiekty Template (wgrywamy tekstury, kolory itp)
@@ -51,6 +52,7 @@ void initObjects(){
     piston = new Template("objects\\piston.obj");
     glow = new Template("objects\\glow.obj");
     valve = new Template("objects\\valve.obj");
+    crankshaft = new Template("objects\\crankshaft.obj");
 }
 
 void removeObjects(){
@@ -60,6 +62,7 @@ void removeObjects(){
     delete piston;
     delete glow;
     delete valve;
+    delete crankshaft;
 }
 
 
@@ -95,7 +98,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
-void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve_move){
+void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve_move, float &st360){
     float spd = 0.05;
     if(course_x){
         x = x+ spd;
@@ -121,6 +124,9 @@ void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve
         course_y = true;
         valve_move = !valve_move;
     }
+
+    st360 = st360 + spd*1.55;
+    if(st360>=360) st360 = 0;
 }
 
 
@@ -161,6 +167,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 
 
     //rysowanie prętu
+    glColor4f(0,1,1,1);
     mat4 M,R,T,S,I,R2;
     I = mat4(1);
     T = translate(I,vec3(dane_f[0]*0.2,dane_f[1]*0.2 -1,0));
@@ -176,6 +183,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 
 
 	//rysowanie tłoka
+	glColor4f(1,0,1,1);
     I = mat4(1);
     T = translate(I,vec3(0,dane_f[1]*0.2 + 0.4,0));
     S = scale(I,vec3(0.2,0.2,0.2));
@@ -189,6 +197,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 
 
 	//rysowanie świecy
+	glColor4f(1,0.5,0.5,1);
     I = mat4(1);
     T = translate(I,vec3(0.02,1.05,0));
     S = scale(I,vec3(0.2,0.2,0.2));
@@ -200,6 +209,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	glow -> drawSolid();
 
     //rysowanie zaworu po prawej
+    glColor4f(1,1,0,1);
     I = mat4(1);
     if(dane_b[2] && dane_f[0] >= 0)
         if(dane_f[1]<=0)
@@ -218,6 +228,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	valve -> drawSolid();
 
 	//rysowanie zaworu po lewej
+	glColor4f(1,1,0,1);
     I = mat4(1);
     if(dane_b[2] && dane_f[0] <= 0)
         if(dane_f[1]<=0)
@@ -234,6 +245,22 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	valve -> drawSolid();
+
+
+    //rysowanie wału korbowego
+    glColor4f(1,0,0,1);
+    I = mat4(1);
+    T = translate(I,vec3(0.2,-0.75,0));
+    S = scale(I,vec3(0.15,0.15,0.15));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	R=rotate(R,90*PI/180,vec3(0,1,0.0));
+	R2=rotate(I,-dane_f[2] + 90,vec3(1,0,0));
+	std::cout<<dane_f[2]<<std::endl;
+	M=R*T*R2*S;
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	crankshaft -> drawSolid();
 
 
 	//Koniec
@@ -278,15 +305,17 @@ int main(void)
 
 	float angle_x = 0, angle_y = 0;
 	float rod_x = 0, rod_y = -1;
+	float st360 = 0;
 	bool rod_cx = true, rod_cy = true, valve_move = true;
-	float dane_f[2];
+	float dane_f[3];
 	bool dane_b[3];
 	//G³ówna pêtla
 	while (!glfwWindowShouldClose(window)) //Tak d³ugo jak okno nie powinno zostaæ zamkniête
 	{
-	    move_circle(rod_x, rod_y, rod_cx, rod_cy, valve_move);
+	    move_circle(rod_x, rod_y, rod_cx, rod_cy, valve_move, st360);
         dane_f[0] = rod_x;
         dane_f[1] = rod_y;
+        dane_f[2] = st360;
         dane_b[0] = rod_cx;
         dane_b[1] = rod_cy;
         dane_b[2] = valve_move;
