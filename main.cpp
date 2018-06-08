@@ -41,12 +41,16 @@ float speed_x = 0, speed_y = 0;
 Template *mushroom;
 Template *rod;
 Template *piston;
+Template *glow;
+Template *valve;
 
 void initObjects(){
     //inicjalzujemy obiekty Template (wgrywamy tekstury, kolory itp)
     mushroom = new Template("objects\\mushroom.obj");
     rod = new Template("objects\\rod.obj");
     piston = new Template("objects\\piston.obj");
+    glow = new Template("objects\\glow.obj");
+    valve = new Template("objects\\valve.obj");
 }
 
 void removeObjects(){
@@ -54,6 +58,8 @@ void removeObjects(){
     delete mushroom;
     delete rod;
     delete piston;
+    delete glow;
+    delete valve;
 }
 
 
@@ -89,7 +95,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
-void move_circle(float &x, float &y, bool &course_x, bool &course_y){
+void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve_move){
     float spd = 0.05;
     if(course_x){
         x = x+ spd;
@@ -111,8 +117,10 @@ void move_circle(float &x, float &y, bool &course_x, bool &course_y){
 
     if(y >= 1.0)
         course_y = false;
-    if(y <= -1.0)
+    if(y <= -1.0){
         course_y = true;
+        valve_move = !valve_move;
+    }
 }
 
 
@@ -152,42 +160,81 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	glMatrixMode(GL_MODELVIEW); //W³¹cz tryb modyfikacji macierzy model-widok. UWAGA! Macierz ta bêdzie ³adowana przed narysowaniem ka¿dego modelu
 
 
-    //Rysowanie pojedynczego modelu
-    //1. Oblicz i za³aduj macierz modelu
+    //rysowanie prętu
     mat4 M,R,T,S,I,R2;
     I = mat4(1);
-    //R = rotate(I,dane_f[0]/180,glm::vec3(1,1,1));
     T = translate(I,vec3(dane_f[0]*0.2,dane_f[1]*0.2 -1,0));
-    S = scale(I,vec3(0.3,0.3,0.3));
-	//R=rotate(R,dane_f[1]*180,vec3(0.0f,1.0f,0.0f));
+    S = scale(I,vec3(0.2,0.2,0.2));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
 	R=rotate(R,dane_f[0]/3,vec3(0,0,1));
 	M=R*T*S;
 
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
-	//2. Narysuj obiekt
-	//glColor3d(0,1,0);
 	rod -> drawSolid();
-    //Stop
 
-    //P=perspective(120.0f*PI/180.0f, aspect, 1.0f, 10.0f); //Wylicz macierz rzutowania
-    //Rysowanie pojedynczego modelu
-    //1. Oblicz i za³aduj macierz modelu
 
+
+	//rysowanie tłoka
     I = mat4(1);
-    //R = rotate(I,dane_f[0]/180,glm::vec3(1,1,1));
-    T = translate(I,vec3(0,dane_f[1]*0.2 +1,0));
-    S = scale(I,vec3(0.3,0.3,0.3));
-	//R=rotate(R,dane_f[1]*180,vec3(0.0f,1.0f,0.0f));
+    T = translate(I,vec3(0,dane_f[1]*0.2 + 0.4,0));
+    S = scale(I,vec3(0.2,0.2,0.2));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
 	M=R*T*S;
+
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
-
-
-    //glColor3d(1,0,0);
 	piston -> drawSolid();
+
+
+
+	//rysowanie świecy
+    I = mat4(1);
+    T = translate(I,vec3(0.02,1.05,0));
+    S = scale(I,vec3(0.2,0.2,0.2));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	M=R*T*S;
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	glow -> drawSolid();
+
+    //rysowanie zaworu po prawej
+    I = mat4(1);
+    if(dane_b[2] && dane_f[0] >= 0)
+        if(dane_f[1]<=0)
+            T = translate(I,vec3((dane_f[0])*0.025+0.15,-(dane_f[1]+1)*0.05 + 1.03,0));
+        else
+            T = translate(I,vec3((dane_f[0])*0.025+0.15,(dane_f[1]-1)*0.05 + 1.03,0));
+    else
+        T = translate(I,vec3(0.15,1.03,0));
+    S = scale(I,vec3(0.15,0.15,0.15));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	R=rotate(R,15*PI/180,vec3(0,0,1));
+	M=R*T*S;
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	valve -> drawSolid();
+
+	//rysowanie zaworu po lewej
+    I = mat4(1);
+    if(dane_b[2] && dane_f[0] <= 0)
+        if(dane_f[1]<=0)
+            T = translate(I,vec3((dane_f[0])*0.025-0.12,-(dane_f[1]+1)*0.05 + 1.03,0));
+        else
+            T = translate(I,vec3((dane_f[0])*0.025-0.12,(dane_f[1]-1)*0.05 + 1.03,0));
+    else
+        T = translate(I,vec3(-0.12,1.03,0));
+    S = scale(I,vec3(0.15,0.15,0.15));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	R=rotate(R,-15*PI/180,vec3(0,0,1));
+	M=R*T*S;
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	valve -> drawSolid();
+
 
 	//Koniec
 	glfwSwapBuffers(window);
@@ -206,7 +253,7 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	window = glfwCreateWindow(500, 500, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
+	window = glfwCreateWindow(800, 800, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 
 	if (!window) //Je¿eli okna nie uda³o siê utworzyæ, to zamknij program
@@ -231,17 +278,18 @@ int main(void)
 
 	float angle_x = 0, angle_y = 0;
 	float rod_x = 0, rod_y = -1;
-	bool rod_cx = true, rod_cy = true;
+	bool rod_cx = true, rod_cy = true, valve_move = true;
 	float dane_f[2];
-	bool dane_b[2];
+	bool dane_b[3];
 	//G³ówna pêtla
 	while (!glfwWindowShouldClose(window)) //Tak d³ugo jak okno nie powinno zostaæ zamkniête
 	{
-	    move_circle(rod_x, rod_y, rod_cx, rod_cy);
+	    move_circle(rod_x, rod_y, rod_cx, rod_cy, valve_move);
         dane_f[0] = rod_x;
         dane_f[1] = rod_y;
         dane_b[0] = rod_cx;
         dane_b[1] = rod_cy;
+        dane_b[2] = valve_move;
 	    angle_x+=speed_x*glfwGetTime(); //Oblicz przyrost kąta obrotu i zwiększ aktualny kąt
         angle_y+=speed_y*glfwGetTime(); //Oblicz przyrost kąta obrotu i zwiększ aktualny kąt
 	    glfwSetTime(0); //Wyzeruj timer
