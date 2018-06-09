@@ -581,7 +581,7 @@
 1526679709 c:\users\michal\desktop\proj\project\allmodels.h
 	"torus.h"
 
-1528450586 source:c:\users\michal\documents\github\engine\main.cpp
+1528530948 source:c:\users\michal\documents\github\engine\main.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<glm/glm.hpp>
@@ -592,6 +592,7 @@
 	"constants.hpp"
 	"class_template.hpp"
 	<iostream>
+	"lodepng.h"
 
 1526677080 c:\users\michal\documents\github\engine\glew\include\gl\glew.h
 	<stddef.h>
@@ -1220,4 +1221,18 @@
 1527670853 c:\users\michal\documents\github\engine\constants.hpp
 	<GLFW/glfw3.h>
 	"class_template.hpp"
+
+1528526902 source:c:\users\michal\documents\github\engine\lodepng.cpp
+	"lodepng.h"
+	<stdio.h>
+	<stdlib.h>
+	<fstream>
+
+1528526955 c:\users\michal\documents\github\engine\lodepng.h
+	<string.h>
+	<vector>
+	<string>
+	"lodepng.h"
+	<iostream>
+	"lodepng.h"
 
