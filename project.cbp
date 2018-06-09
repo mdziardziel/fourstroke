@@ -34,6 +34,7 @@
 			<Add directory="glfw/include" />
 			<Add directory="glew/include" />
 			<Add directory="glm" />
+			<Add directory="." />
 		</Compiler>
 		<Linker>
 			<Add library="glfw3" />
