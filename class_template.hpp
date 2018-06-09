@@ -6,7 +6,7 @@
 #include "class_template.hpp"
 
 class Template
-{
+{   //definiujemy tablice na wierzcho³ki, normalne, textury itp
     protected:
         const char * path;
         int vertexCount;

@@ -39,7 +39,7 @@ float speed=3.14; //prêdkoœæ k¹towa obrotu w radianach na sekundê
 float speed_x = 0, speed_y = 0;
 GLuint tex; //Globalnie
 
-//deklarujemy obiekty Template
+//deklarujemy obiekty Template, każdy obiekt ma w sobie potrzebne wektory i metodę tworzenia przedmiotu
 Template *mushroom;
 Template *rod;
 Template *piston;
@@ -101,23 +101,20 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 
 void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve_move, float &st360){
-    float spd = 3;
-    float promien = 0.12;
+    float spd = 3; //podajemy prędkość obrotu
+    float promien = 0.12; //podajemy promień obrotu prętu
 
     st360 = st360 + spd;
     if(st360>=360)
         st360 = 0;
 
-    if(st360==90)
+    if(st360==270) //jeśli obrót ma więcej niż 90 stopni to co drugi obrót wału umożliwiamy zaworom otwarcie
         valve_move = !valve_move;
 
-    y = std::sin(st360*PI/180)*promien;
-    if(st360!=90)x = std::cos(st360*PI/180)*promien;
-    else x = 0;
-
-    //std::cout<<valve_move<<" "<<st360<<" "<<x<<" "<<y<<std::endl;
-
-
+    y = std::sin(st360*PI/180)*promien; // obliczamy x i y z cos i sin dla pręta
+    x = std::cos(st360*PI/180)*promien;
+    if(st360==90)x = 0;
+    if(st360==270)x = 0;
 }
 
 
@@ -174,18 +171,17 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	glMatrixMode(GL_MODELVIEW); //W³¹cz tryb modyfikacji macierzy model-widok. UWAGA! Macierz ta bêdzie ³adowana przed narysowaniem ka¿dego modelu
 
 
-    //rysowanie prętu
+    //rysowanie prętu (tego elementu przyczepionego do tłoka z góry i wału z dołu)
     glBindTexture(GL_TEXTURE_2D,tex);
     glColor4f(0,1,1,1);
-    mat4 M,R,T,S,I,R2;
+    mat4 M,R,T,S,I,R2;// definiujemy potrzebne zmienne
     I = mat4(1);
-    T = translate(I,vec3(dane_f[0],dane_f[1] -1,0));
-    S = scale(I,vec3(0.2,0.2,0.2));
-    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
-	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
-	R=rotate(R,dane_f[0],vec3(0,0,1));
-	//std::cout<<dane_f[0]<<" "<<dane_f[1]<<std::endl;
-	M=R*T*S;
+    T = translate(I,vec3(dane_f[0],dane_f[1] -1,0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
+    S = scale(I,vec3(0.2,0.2,0.2)); //skalujemy
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
+	R=rotate(R,dane_f[0],vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
+	M=R*T*S; // wymnażanie macierzy, od prawej
 
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	rod -> drawSolid();
@@ -195,7 +191,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	//rysowanie tłoka
 	glColor4f(1,0,1,1);
     I = mat4(1);
-    T = translate(I,vec3(0,dane_f[1] + 0.4,0));
+    T = translate(I,vec3(0,dane_f[1] + 0.4,0)); //tłok porusza się ruchem góra dół dzięki dane_f[1]
     S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
@@ -221,8 +217,8 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
     //rysowanie zaworu po prawej
     glColor4f(1,1,0,1);
     I = mat4(1);
-    if(dane_b[2] && dane_f[0] < 0)
-        if(dane_f[1]<0)
+    if(dane_b[2] && dane_f[0] < 0) //zawór po prawej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w dół(dzięki dane_f[0] < 0) ponieważ zasysa powietrze
+        if(dane_f[1]<0)// tutaj są obliczenia przeliczające ruch pręta na ruch zaworu, dopasowane empirycznie tak, aby to jakoś wyglądało
             T = translate(I,vec3((dane_f[0])*0.025+0.15,-(dane_f[1]+1)*0.05 + 1.03,0));
         else
             T = translate(I,vec3((dane_f[0])*0.025+0.15,(dane_f[1]-1)*0.05 + 1.03,0));
@@ -231,7 +227,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
     S = scale(I,vec3(0.15,0.15,0.15));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
-	R=rotate(R,15*PI/180,vec3(0,0,1));
+	R=rotate(R,15*PI/180,vec3(0,0,1)); //obracamy o te 15 stopni w prawo
 	M=R*T*S;
 
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
@@ -240,7 +236,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	//rysowanie zaworu po lewej
 	glColor4f(1,1,0,1);
     I = mat4(1);
-    if(dane_b[2] && dane_f[0] > 0)
+    if(dane_b[2] && dane_f[0] > 0) //zawór po lewej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w górę(dzięki dane_f[0] > 0) ponieważ wychodzą nim spaliny
         if(dane_f[1]<0)
             T = translate(I,vec3((dane_f[0])*0.025-0.12,-(dane_f[1]+1)*0.05 + 1.03,0));
         else
@@ -250,7 +246,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
     S = scale(I,vec3(0.15,0.15,0.15));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
-	R=rotate(R,-15*PI/180,vec3(0,0,1));
+	R=rotate(R,-15*PI/180,vec3(0,0,1)); // obracamy o 15 stopni w lewo
 	M=R*T*S;
 
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
@@ -264,9 +260,9 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
     S = scale(I,vec3(0.15,0.105,0.15));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
-	R=rotate(R,90*PI/180,vec3(0,1,0.0));
-	R2=rotate(I,(-dane_f[2] +90)*PI/180 ,vec3(1,0,0));
-	M=R*T*R2*S;
+	R=rotate(R,90*PI/180,vec3(0,1,0.0)); // obracamy wał do pozycji początkowej, żeby był w poiomie prostopadle do prętu
+	R2=rotate(I,(-dane_f[2] +90)*PI/180 ,vec3(1,0,0)); //obracamy wałem wokół jego osi( dzięki -dane_f[2) równo z prętem (dzięki dodaniu 90 stopni)
+	M=R*T*R2*S;// mnożymy R2 przed T, żeby pręt obracał się wokół własnej osi, po przesunięciu obracał by się po dużym okręgu
 
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	crankshaft -> drawSolid();
@@ -316,18 +312,18 @@ int main(void)
 	float rod_x = 0, rod_y = -1;
 	float st360 = 0;
 	bool rod_cx = true, rod_cy = true, valve_move = true;
-	float dane_f[3];
+	float dane_f[3]; //pakujemy wszystko w tablice, żeby było wygodniej
 	bool dane_b[3];
 	//G³ówna pêtla
 	while (!glfwWindowShouldClose(window)) //Tak d³ugo jak okno nie powinno zostaæ zamkniête
 	{
 	    move_circle(rod_x, rod_y, rod_cx, rod_cy, valve_move, st360);
-        dane_f[0] = rod_x;
-        dane_f[1] = rod_y;
-        dane_f[2] = st360;
-        dane_b[0] = rod_cx;
-        dane_b[1] = rod_cy;
-        dane_b[2] = valve_move;
+        dane_f[0] = rod_x; //przesunięcie pręta x
+        dane_f[1] = rod_y; //przesunięcie pręta y
+        dane_f[2] = st360; //ilość stopni do obrotu wału
+        dane_b[0] = rod_cx; //w sumie już nie potrzebne
+        dane_b[1] = rod_cy; //to też nie potrzebne
+        dane_b[2] = valve_move; // określa czy zawory mogą się poruszyć
 	    angle_x+=speed_x*glfwGetTime(); //Oblicz przyrost kąta obrotu i zwiększ aktualny kąt
         angle_y+=speed_y*glfwGetTime(); //Oblicz przyrost kąta obrotu i zwiększ aktualny kąt
 	    glfwSetTime(0); //Wyzeruj timer

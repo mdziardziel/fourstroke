@@ -2,11 +2,11 @@
 #include "class_template.hpp"
 
 Template::Template(char * path){
-    this -> path = path;
-    loadeObj(path, &vertices, &vertexNormals, &texCoords,&normals, &colors, &vertexCount);
+    this -> path = path; //bierzemy œcie¿kê do modelu
+    loadeObj(path, &vertices, &vertexNormals, &texCoords,&normals, &colors, &vertexCount); //przetwarzamy obiekt na tablice wwierzcho³ków, normalnych, textur, itp
 }
 
-void Template::drawSolid() {
+void Template::drawSolid() { //metoda rysuj¹ca modele
     glEnableClientState(GL_VERTEX_ARRAY);
     //glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
