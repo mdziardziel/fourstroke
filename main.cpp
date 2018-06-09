@@ -29,7 +29,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "constants.hpp"
 #include "class_template.hpp"
 #include <iostream>
-#include "lodepng.h"
+#include <lodepng.h>
 
 using namespace glm;
 
