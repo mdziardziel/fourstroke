@@ -196,7 +196,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	glColor4f(1,0,1,1);
     I = mat4(1);
     T = translate(I,vec3(0,dane_f[1] + 0.4,0));
-    S = scale(I,vec3(0.2,0.2,0.2));
+    S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
 	M=R*T*S;
@@ -261,7 +261,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
     glColor4f(1,0,0,1);
     I = mat4(1);
     T = translate(I,vec3(0.2,-0.75,0));
-    S = scale(I,vec3(0.15,0.1,0.15));
+    S = scale(I,vec3(0.15,0.105,0.15));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
 	R=rotate(R,90*PI/180,vec3(0,1,0.0));
