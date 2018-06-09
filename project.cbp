@@ -46,6 +46,8 @@
 		<Unit filename="class_template.cpp" />
 		<Unit filename="class_template.hpp" />
 		<Unit filename="constants.hpp" />
+		<Unit filename="lodepng.cpp" />
+		<Unit filename="lodepng.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="objloader.cpp" />
 		<Unit filename="objloader.hpp" />
