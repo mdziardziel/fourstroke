@@ -50,11 +50,11 @@ Template *crankshaft;
 void initObjects(){
     //inicjalzujemy obiekty Template (wgrywamy tekstury, kolory itp)
     mushroom = new Template("objects\\mushroom.obj");
-    rod = new Template("objects\\pret.obj");
-    piston = new Template("objects\\pistonpppppp.obj");
+    rod = new Template("objects\\x_prety_g1.obj");
+    piston = new Template("objects\\x_tloki_g1.obj");
     glow = new Template("objects\\glow.obj");
     valve = new Template("objects\\valve.obj");
-    crankshaft = new Template("objects\\wal.obj");
+    crankshaft = new Template("objects\\x_wal.obj");
 }
 
 void removeObjects(){
@@ -102,7 +102,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve_move, float &st360){
     float spd = 3; //podajemy prędkość obrotu
-    float promien = 0.23; //podajemy promień obrotu prętu
+    float promien = 0.28; //podajemy promień obrotu prętu
 
     st360 = st360 + spd;
     if(st360>=360)
@@ -115,6 +115,8 @@ void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve
     x = std::cos(st360*PI/180)*promien;
     if(st360==90)x = 0;
     if(st360==270)x = 0;
+
+    //std::cout<<x<<" "<<x<<std::endl;
 }
 
 
@@ -153,6 +155,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 
 
+
+
 //Procedura rysuj¹ca zawartoœæ sceny
 void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, bool *dane_b) {
 	//************Tutaj umieszczaj kod rysuj¹cy obraz******************
@@ -176,8 +180,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
     glColor4f(0,1,1,1);
     mat4 M,R,T,S,I,R2,R1;// definiujemy potrzebne zmienne
     I = mat4(1);
-    T = translate(I,vec3(dane_f[0],dane_f[1]-0.3,0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
-    //T = translate(I,vec3(0,0,0));
+    T = translate(I,vec3(dane_f[0],dane_f[1],0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
     S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
@@ -192,7 +195,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	//rysowanie tłoka
 	glColor4f(1,0,1,1);
     I = mat4(1);
-    T = translate(I,vec3(-0.15,dane_f[1]+0.8,0.25)); //tłok porusza się ruchem góra dół dzięki dane_f[1]
+    T = translate(I,vec3(0,dane_f[1],0)); //tłok porusza się ruchem góra dół dzięki dane_f[1]
     S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
@@ -202,7 +205,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	piston -> drawSolid();
 
 
-
+/*
 	//rysowanie świecy
 	glColor4f(1,0.5,0.5,1);
     I = mat4(1);
@@ -252,7 +255,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	valve -> drawSolid();
-
+*/
 
     //rysowanie wału korbowego
     glColor4f(1,0,0,1);
@@ -310,8 +313,8 @@ int main(void)
 	glfwSetTime(0); //Wyzeruj licznik czasu
 
 	float angle_x = 0, angle_y = 0;
-	float rod_x = 0, rod_y = -1;
-	float st360 = 0;
+	float rod_x = 0, rod_y = 0;
+	float st360 = 90;
 	bool rod_cx = true, rod_cy = true, valve_move = true;
 	float dane_f[3]; //pakujemy wszystko w tablice, żeby było wygodniej
 	bool dane_b[3];
@@ -322,8 +325,6 @@ int main(void)
         dane_f[0] = rod_x; //przesunięcie pręta x
         dane_f[1] = rod_y; //przesunięcie pręta y
         dane_f[2] = st360; //ilość stopni do obrotu wału
-        dane_b[0] = rod_cx; //w sumie już nie potrzebne
-        dane_b[1] = rod_cy; //to też nie potrzebne
         dane_b[2] = valve_move; // określa czy zawory mogą się poruszyć
 	    angle_x+=speed_x*glfwGetTime(); //Oblicz przyrost kąta obrotu i zwiększ aktualny kąt
         angle_y+=speed_y*glfwGetTime(); //Oblicz przyrost kąta obrotu i zwiększ aktualny kąt
