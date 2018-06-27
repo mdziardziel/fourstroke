@@ -50,11 +50,11 @@ Template *crankshaft;
 void initObjects(){
     //inicjalzujemy obiekty Template (wgrywamy tekstury, kolory itp)
     mushroom = new Template("objects\\mushroom.obj");
-    rod = new Template("objects\\rod.obj");
-    piston = new Template("objects\\piston.obj");
+    rod = new Template("objects\\pret.obj");
+    piston = new Template("objects\\pistonpppppp.obj");
     glow = new Template("objects\\glow.obj");
     valve = new Template("objects\\valve.obj");
-    crankshaft = new Template("objects\\crankshaft.obj");
+    crankshaft = new Template("objects\\wal.obj");
 }
 
 void removeObjects(){
@@ -176,8 +176,8 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
     glColor4f(0,1,1,1);
     mat4 M,R,T,S,I,R2;// definiujemy potrzebne zmienne
     I = mat4(1);
-    T = translate(I,vec3(dane_f[0],dane_f[1] -1,0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
-    S = scale(I,vec3(0.2,0.2,0.2)); //skalujemy
+    T = translate(I,vec3(dane_f[0],dane_f[1],0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
+    S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
 	R=rotate(R,dane_f[0],vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
@@ -191,7 +191,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	//rysowanie tłoka
 	glColor4f(1,0,1,1);
     I = mat4(1);
-    T = translate(I,vec3(0,dane_f[1] + 0.4,0)); //tłok porusza się ruchem góra dół dzięki dane_f[1]
+    T = translate(I,vec3(0,dane_f[1],0)); //tłok porusza się ruchem góra dół dzięki dane_f[1]
     S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
@@ -256,13 +256,13 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
     //rysowanie wału korbowego
     glColor4f(1,0,0,1);
     I = mat4(1);
-    T = translate(I,vec3(0.2,-0.75,0));
-    S = scale(I,vec3(0.15,0.105,0.15));
+    T = translate(I,vec3(0,0,0));
+    S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
-	R=rotate(R,90*PI/180,vec3(0,1,0.0)); // obracamy wał do pozycji początkowej, żeby był w poiomie prostopadle do prętu
-	R2=rotate(I,(-dane_f[2] +90)*PI/180 ,vec3(1,0,0)); //obracamy wałem wokół jego osi( dzięki -dane_f[2) równo z prętem (dzięki dodaniu 90 stopni)
-	M=R*T*R2*S;// mnożymy R2 przed T, żeby pręt obracał się wokół własnej osi, po przesunięciu obracał by się po dużym okręgu
+	//R=rotate(R,90*PI/180,vec3(0,1,0.0)); // obracamy wał do pozycji początkowej, żeby był w poiomie prostopadle do prętu
+	//R2=rotate(I,(-dane_f[2] +90)*PI/180 ,vec3(1,0,0)); //obracamy wałem wokół jego osi( dzięki -dane_f[2) równo z prętem (dzięki dodaniu 90 stopni)
+	M=R*T*S;// mnożymy R2 przed T, żeby pręt obracał się wokół własnej osi, po przesunięciu obracał by się po dużym okręgu
 
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	crankshaft -> drawSolid();
