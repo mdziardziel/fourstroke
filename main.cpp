@@ -102,7 +102,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve_move, float &st360){
     float spd = 3; //podajemy prędkość obrotu
-    float promien = 0.12; //podajemy promień obrotu prętu
+    float promien = 0.23; //podajemy promień obrotu prętu
 
     st360 = st360 + spd;
     if(st360>=360)
@@ -174,9 +174,10 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
     //rysowanie prętu (tego elementu przyczepionego do tłoka z góry i wału z dołu)
     glBindTexture(GL_TEXTURE_2D,tex);
     glColor4f(0,1,1,1);
-    mat4 M,R,T,S,I,R2;// definiujemy potrzebne zmienne
+    mat4 M,R,T,S,I,R2,R1;// definiujemy potrzebne zmienne
     I = mat4(1);
-    T = translate(I,vec3(dane_f[0],dane_f[1],0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
+    T = translate(I,vec3(dane_f[0],dane_f[1]-0.3,0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
+    //T = translate(I,vec3(0,0,0));
     S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
@@ -191,7 +192,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	//rysowanie tłoka
 	glColor4f(1,0,1,1);
     I = mat4(1);
-    T = translate(I,vec3(0,dane_f[1],0)); //tłok porusza się ruchem góra dół dzięki dane_f[1]
+    T = translate(I,vec3(-0.15,dane_f[1]+0.8,0.25)); //tłok porusza się ruchem góra dół dzięki dane_f[1]
     S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
@@ -205,7 +206,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	//rysowanie świecy
 	glColor4f(1,0.5,0.5,1);
     I = mat4(1);
-    T = translate(I,vec3(0.02,1.05,0));
+    T = translate(I,vec3(0,1.55,-1.15));
     S = scale(I,vec3(0.2,0.2,0.2));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
@@ -260,9 +261,9 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
     S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
-	//R=rotate(R,90*PI/180,vec3(0,1,0.0)); // obracamy wał do pozycji początkowej, żeby był w poiomie prostopadle do prętu
-	//R2=rotate(I,(-dane_f[2] +90)*PI/180 ,vec3(1,0,0)); //obracamy wałem wokół jego osi( dzięki -dane_f[2) równo z prętem (dzięki dodaniu 90 stopni)
-	M=R*T*S;// mnożymy R2 przed T, żeby pręt obracał się wokół własnej osi, po przesunięciu obracał by się po dużym okręgu
+	//R1=rotate(I,180*PI/180,vec3(0,1,0)); // obracamy wał do pozycji początkowej, żeby był w poiomie prostopadle do prętu
+	R2=rotate(I,(dane_f[2]-90)*PI/180 ,vec3(0,0,1)); //obracamy wałem wokół jego osi( dzięki -dane_f[2) równo z prętem (dzięki dodaniu 90 stopni)
+	M=R*T*R2*S;// mnożymy R2 przed T, żeby pręt obracał się wokół własnej osi, po przesunięciu obracał by się po dużym okręgu
 
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	crankshaft -> drawSolid();
