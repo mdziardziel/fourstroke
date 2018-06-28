@@ -133,30 +133,30 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 //************Tekstury************
 
-    std::vector<unsigned char> image;   //Alokuj wektor do wczytania obrazka
+    std::vector<unsigned char> image1, image2;   //Alokuj wektor do wczytania obrazka
     unsigned width, height;   //Zmienne do których wczytamy wymiary obrazka
 
     //Wczytaj obrazek
-    unsigned error = lodepng::decode(image, width, height, "metal.png");
+    unsigned error = lodepng::decode(image1, width, height, "metal.png");
 
     //Import do pamięci karty graficznej
     glGenTextures(2,tex); //Zainicjuj dwa uchwyty
     glBindTexture(GL_TEXTURE_2D, tex[0]); //Uaktywnij uchwyt
 
     //Wczytaj obrazek do pamięci KG skojarzonej z uchwytem
-    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image1.data());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
-    error = lodepng::decode(image, width, height, "gold.png");
+    error = lodepng::decode(image2, width, height, "gold.png");
 
     //Import do pamięci karty graficznej
     glBindTexture(GL_TEXTURE_2D, tex[1]); //Uaktywnij uchwyt
 
     //Wczytaj obrazek do pamięci KG skojarzonej z uchwytem
-    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image2.data());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
