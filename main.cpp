@@ -57,7 +57,7 @@ void initObjects(){
     piston = new Template("objects\\x_rurka_tlok_g1.obj");
     rod1 = new Template("objects\\x_prety_d1.obj");
     piston1 = new Template("objects\\x_rurka_tlok_d1.obj");
-    glow = new Template("objects\\glow.obj");
+    glow = new Template("objects\\x_swiece.obj");
     valve = new Template("objects\\valve.obj");
     crankshaft = new Template("objects\\x_wal.obj");
 }
@@ -225,23 +225,12 @@ float oblicz_stopnie(float el, float iks){
 }
 
 
-void rysuj_zaw_sw2(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, bool *dane_b, float odl, bool zaw){
+void rysuj_zaw_sw2(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, bool *dane_b, float odl){
+        mat4 M,R,T,S,I,R2,R1;// definiujemy potrzebne zmienne
 	mat4 V=lookAt( //Wylicz macierz widoku
-                vec3(0.0f,1.25f,-5.0f),
-                vec3(0.0f,0.0f,0.0f),
-                vec3(0.0f,1.0f,0.0f));
-
-	//rysowanie świecy
-     mat4 M,R,T,S,I,R2,R1;
-    I = mat4(1);
-    T = translate(I,vec3(0,1.55,odl));
-    S = scale(I,vec3(0.2,0.2,0.2));
-    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
-	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
-	M=R*T*S;
-
-	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
-	glow -> drawSolid();
+                vec3(0,1,-5),
+                vec3(0,1,0),
+                vec3(0,1,0));
 
     //rysowanie zaworu po prawej
     glColor4f(1,1,0,1);
@@ -252,7 +241,7 @@ void rysuj_zaw_sw2(GLFWwindow* window,float angle_x, float angle_y, float *dane_
         else
             T = translate(I,vec3((dane_f[0])*0.025+0.25,(dane_f[1]-1)*0.05 + 1.55,odl));
     else
-        T = translate(I,vec3(0.25,1.55,odl));
+         T = translate(I,vec3(0.25,1.55,odl));
     S = scale(I,vec3(0.15,0.15,0.15));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
@@ -282,34 +271,25 @@ void rysuj_zaw_sw2(GLFWwindow* window,float angle_x, float angle_y, float *dane_
 	valve -> drawSolid();
 }
 
-void rysuj_zaw_sw1(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, bool *dane_b, float odl, bool zaw){
+
+void rysuj_zaw_sw1(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, bool *dane_b, float odl){
+        mat4 M,R,T,S,I,R2,R1;// definiujemy potrzebne zmienne
 	mat4 V=lookAt( //Wylicz macierz widoku
-                vec3(0.0f,1.25f,-5.0f),
-                vec3(0.0f,0.0f,0.0f),
-                vec3(0.0f,1.0f,0.0f));
+                vec3(0,1,-5),
+                vec3(0,1,0),
+                vec3(0,1,0));
 
-	//rysowanie świecy
-     mat4 M,R,T,S,I,R2,R1;
-    I = mat4(1);
-    T = translate(I,vec3(0,1.55,odl));
-    S = scale(I,vec3(0.2,0.2,0.2));
-    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
-	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
-	M=R*T*S;
-
-	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
-	glow -> drawSolid();
 
     //rysowanie zaworu po prawej
     glColor4f(1,1,0,1);
     I = mat4(1);
     if(dane_b[2]  && dane_f[0] < 0) //zawór po prawej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w dół(dzięki dane_f[0] < 0) ponieważ zasysa powietrze
-        if(zaw && dane_f[1]<0)// tutaj są obliczenia przeliczające ruch pręta na ruch zaworu, dopasowane empirycznie tak, aby to jakoś wyglądało
+        if(dane_f[1]<0)// tutaj są obliczenia przeliczające ruch pręta na ruch zaworu, dopasowane empirycznie tak, aby to jakoś wyglądało
             T = translate(I,vec3((dane_f[0])*0.025+0.25,-(dane_f[1]+1)*0.05 + 1.55,odl));
         else
             T = translate(I,vec3((dane_f[0])*0.025+0.25,(dane_f[1]-1)*0.05 + 1.55,odl));
     else
-        T = translate(I,vec3(0.25,1.55,odl));
+         T = translate(I,vec3(0.25,1.55,odl));
     S = scale(I,vec3(0.15,0.15,0.15));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
@@ -323,12 +303,12 @@ void rysuj_zaw_sw1(GLFWwindow* window,float angle_x, float angle_y, float *dane_
 	glColor4f(1,1,0,1);
     I = mat4(1);
     if(dane_b[2] && dane_f[0] > 0) //zawór po lewej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w górę(dzięki dane_f[0] > 0) ponieważ wychodzą nim spaliny
-        if(zaw  && dane_f[1]<0)
-            T = translate(I,vec3((dane_f[0])*0.025-0.25,-(dane_f[1]+1)*0.05 + 1.55,odl));
+        if(dane_f[1]<0)
+           T = translate(I,vec3((dane_f[0])*0.025-0.25,-(dane_f[1]+1)*0.05 + 1.55,odl));
         else
             T = translate(I,vec3((dane_f[0])*0.025-0.25,(dane_f[1]-1)*0.05 + 1.55,odl));
     else
-        T = translate(I,vec3(-0.25,1.55,odl));
+         T = translate(I,vec3(-0.25,1.55,odl));
     S = scale(I,vec3(0.15,0.15,0.15));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
@@ -348,9 +328,9 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	//Przygotuj macierze rzutowania i widoku dla renderowanego obrazu
 	mat4 P= perspective(50.0f*PI/180.0f,1.0f,1.0f, 50.0f); //Wylicz macierz rzutowania
 	mat4 V=lookAt( //Wylicz macierz widoku
-                vec3(0.0f,1.25f,-5.0f),
-                vec3(0.0f,0.0f,0.0f),
-                vec3(0.0f,1.0f,0.0f));
+                vec3(0,1,-5),
+                vec3(0,1,0),
+                vec3(0,1,0));
 
 	glMatrixMode(GL_PROJECTION); //W³¹cz tryb modyfikacji macierzy rzutowania
 	glLoadMatrixf(value_ptr(P)); //Skopiuj macierz rzutowania
@@ -413,10 +393,21 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 
 
 
-	rysuj_zaw_sw1(window, angle_x,angle_y,dane_f,dane_b,1,false);
-	rysuj_zaw_sw2(window,angle_x,angle_y,dane_f,dane_b,-1.3,false);
-	rysuj_zaw_sw2(window,angle_x,angle_y,dane_f,dane_b,0.2,true);
-	rysuj_zaw_sw1(window,angle_x,angle_y,dane_f,dane_b,-0.5,true);
+	rysuj_zaw_sw1(window, angle_x,angle_y,dane_f,dane_b,1);
+	rysuj_zaw_sw2(window,angle_x,angle_y,dane_f,dane_b,-1.3);
+	rysuj_zaw_sw2(window,angle_x,angle_y,dane_f,dane_b,0.2);
+	rysuj_zaw_sw1(window,angle_x,angle_y,dane_f,dane_b,-0.5);
+
+	//rysowanie świecy
+    I = mat4(1);
+    T = translate(I,vec3(0,0,0));
+    S = scale(I,vec3(0.25,0.25,0.25));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	M=R*T*S;
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	glow -> drawSolid();
 
 
     //rysowanie wału korbowego
