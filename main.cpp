@@ -48,6 +48,7 @@ Template *piston1;
 Template *glow;
 Template *valve;
 Template *crankshaft;
+Template *rurka;
 
 void initObjects(){
     //inicjalzujemy obiekty Template (wgrywamy tekstury, kolory itp)
@@ -152,14 +153,33 @@ void initOpenGLProgram(GLFWwindow* window) {
     glEnable(GL_LIGHT0); //Włącz światło numer 0
     glEnable(GL_LIGHT1);
     glEnable(GL_DEPTH_TEST); //W³¹#define M_PI 3.14159265358979323846cz bufor g³êbokoœci
-    //glEnable(GL_COLOR_MATERIAL); //W³¹cz ustawianie koloru materia³u przez polecenia glColor
+//    glEnable(GL_COLOR_MATERIAL); //W³¹cz ustawianie koloru materia³u przez polecenia glColor
 
-    float pos[] = {1,1,1,0};
-    glLightfv(GL_LIGHT1, GL_POSITION, pos);
-
-    //float dir[] = {}
+//*****Światła*****
 
 
+//*****Światło 0*****
+    float pos0[] = {2,2,1,0};
+    glLightfv(GL_LIGHT0, GL_POSITION, pos0);
+
+    float dir0[] = {-1,-1,0};
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, dir0);
+
+    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 45);
+//*****Światło 1*****
+    float pos1[] = {-2,2,1,0};
+    glLightfv(GL_LIGHT1, GL_POSITION, pos1);
+
+    float dir1[] = {1,-1,0};
+    glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, dir1);
+
+    float dif1[] = {1,1,1,1};
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, dif1);
+
+    float spec1[] = {1,1,1,1};
+    glLightfv(GL_LIGHT1, GL_SPECULAR, spec1);
+
+    glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45);
 
 
     //Cieniowanie
@@ -195,7 +215,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	//Przygotuj macierze rzutowania i widoku dla renderowanego obrazu
 	mat4 P= perspective(50.0f*PI/180.0f,1.0f,1.0f, 50.0f); //Wylicz macierz rzutowania
 	mat4 V=lookAt( //Wylicz macierz widoku
-                vec3(0.0f,1.15f,-5.0f),
+                vec3(0.0f,1.25f,-5.0f),
                 vec3(0.0f,0.0f,0.0f),
                 vec3(0.0f,1.0f,0.0f));
 
