@@ -43,6 +43,8 @@ GLuint tex; //Globalnie
 Template *mushroom;
 Template *rod;
 Template *piston;
+Template *rod1;
+Template *piston1;
 Template *glow;
 Template *valve;
 Template *crankshaft;
@@ -52,6 +54,8 @@ void initObjects(){
     mushroom = new Template("objects\\mushroom.obj");
     rod = new Template("objects\\x_prety_g1.obj");
     piston = new Template("objects\\x_tloki_g1.obj");
+    rod1 = new Template("objects\\x_prety_d1.obj");
+    piston1 = new Template("objects\\x_tloki_d1.obj");
     glow = new Template("objects\\glow.obj");
     valve = new Template("objects\\valve.obj");
     crankshaft = new Template("objects\\x_wal.obj");
@@ -62,6 +66,8 @@ void removeObjects(){
     delete mushroom;
     delete rod;
     delete piston;
+        delete rod1;
+    delete piston1;
     delete glow;
     delete valve;
     delete crankshaft;
@@ -184,7 +190,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	glMatrixMode(GL_MODELVIEW); //W³¹cz tryb modyfikacji macierzy model-widok. UWAGA! Macierz ta bêdzie ³adowana przed narysowaniem ka¿dego modelu
 
 
-    //rysowanie prętu (tego elementu przyczepionego do tłoka z góry i wału z dołu)
+    //rysowanie prętu gora (tego elementu przyczepionego do tłoka z góry i wału z dołu)
     glBindTexture(GL_TEXTURE_2D,tex);
     glColor4f(0,1,1,1);
     mat4 M,R,T,S,I,R2,R1;// definiujemy potrzebne zmienne
@@ -201,8 +207,21 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	rod -> drawSolid();
 
 
+	    //rysowanie prętu dol (tego elementu przyczepionego do tłoka z góry i wału z dołu)
+    I = mat4(1);
+    T = translate(I,vec3(-dane_f[0],-dane_f[1],0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
+    S = scale(I,vec3(0.25,0.25,0.25));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
+	R=rotate(R,-oblicz_stopnie(0.88, dane_f[0]),vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
+	M=R*T*S; // wymnażanie macierzy, od prawej
 
-	//rysowanie tłoka
+    oblicz_stopnie(1,dane_f[0]);
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	rod1 -> drawSolid();
+
+
+	//rysowanie tłoka gora
 	glColor4f(1,0,1,1);
     I = mat4(1);
     T = translate(I,vec3(0,dane_f[1],0)); //tłok porusza się ruchem góra dół dzięki dane_f[1]
@@ -213,6 +232,18 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	piston -> drawSolid();
+
+		//rysowanie tłoka dol
+	glColor4f(1,0,1,1);
+    I = mat4(1);
+    T = translate(I,vec3(0,-dane_f[1],0)); //tłok porusza się ruchem góra dół dzięki dane_f[1]
+    S = scale(I,vec3(0.25,0.25,0.25));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	M=R*T*S;
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	piston1 -> drawSolid();
 
 
 /*
