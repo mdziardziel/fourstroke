@@ -66,14 +66,12 @@ void removeObjects(){
     delete mushroom;
     delete rod;
     delete piston;
-        delete rod1;
+    delete rod1;
     delete piston1;
     delete glow;
     delete valve;
     delete crankshaft;
 }
-
-
 
 //Framebuffer size change event processing
 void windowResize(GLFWwindow* window, int width, int height) {
@@ -85,8 +83,6 @@ void windowResize(GLFWwindow* window, int width, int height) {
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
 }
-
-
 
 //Procedura obsługi klawiatury
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
@@ -107,7 +103,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 
 void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve_move, float &st360){
-    float spd = 0.5; //podajemy prędkość obrotu
+    float spd = 3; //podajemy prędkość obrotu0.9188325
     float promien = 0.28; //podajemy promień obrotu prętu
 
     st360 = st360 + spd;
@@ -125,40 +121,38 @@ void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve
     //std::cout<<x<<" "<<y<<std::endl;
 }
 
-
 //Procedura inicjuj¹ca
 void initOpenGLProgram(GLFWwindow* window) {
 	//************Tutaj umieszczaj kod, który nale¿y wykonaæ raz, na pocz¹tku programu************
 
 	glfwSetFramebufferSizeCallback(window, windowResize);//Zarejestruj procedurê obs³ugi zmiany rozmiaru ekranu.
-
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
 
     glClearColor(0,0,0,1); //Ustaw kolor czyszczenia bufora kolorów na czarno
-    glEnable(GL_LIGHTING); //W³¹cz cieniowanie
-    glEnable(GL_LIGHT0); //W³¹cz œwia³o numer 0
-    glEnable(GL_DEPTH_TEST); //W³¹#define M_PI 3.14159265358979323846cz bufor g³êbokoœci
-    //glEnable(GL_COLOR_MATERIAL); //W³¹cz ustawianie koloru materia³u przez polecenia glColor
-    glEnable(GL_NORMALIZE);
+
     std::vector<unsigned char> image;   //Alokuj wektor do wczytania obrazka
     unsigned width, height;   //Zmienne do których wczytamy wymiary obrazka
+
     //Wczytaj obrazek
     unsigned error = lodepng::decode(image, width, height, "metal.png");
 
     //Import do pamięci karty graficznej
     glGenTextures(1,&tex); //Zainicjuj jeden uchwyt
     glBindTexture(GL_TEXTURE_2D, tex); //Uaktywnij uchwyt
+
     //Wczytaj obrazek do pamięci KG skojarzonej z uchwytem
-    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0,
-    GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image.data());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glEnable(GL_TEXTURE_2D);
+    glEnable(GL_NORMALIZE);
+    glEnable(GL_LIGHTING); //Włącz cieniowanie
+    glEnable(GL_LIGHT0); //Włącz światło numer 0
+    glEnable(GL_DEPTH_TEST); //W³¹#define M_PI 3.14159265358979323846cz bufor g³êbokoœci
+    //glEnable(GL_COLOR_MATERIAL); //W³¹cz ustawianie koloru materia³u przez polecenia glColor
 }
-
-
 
 
 float oblicz_stopnie(float el, float iks){
@@ -166,31 +160,40 @@ float oblicz_stopnie(float el, float iks){
     float beta = std::asin(sinb);
     float alfa = PI/2 - beta;
     float gamma = PI/2 - alfa;
-    float wyn = gamma*180/PI;
+    //float wyn = gamma*180/PI;
     //std::cout<<wyn<<std::endl;
     return gamma;
 }
 
-
 //Procedura rysuj¹ca zawartoœæ sceny
 void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, bool *dane_b) {
 	//************Tutaj umieszczaj kod rysuj¹cy obraz******************
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyœæ bufor kolorów i bufor g³êbokoœci
 
 	//Przygotuj macierze rzutowania i widoku dla renderowanego obrazu
 	mat4 P= perspective(50.0f*PI/180.0f,1.0f,1.0f, 50.0f); //Wylicz macierz rzutowania
-
 	mat4 V=lookAt( //Wylicz macierz widoku
-	vec3(0.0f,0.0f,-5.0f),
-	vec3(0.0f,0.0f,0.0f),
-	vec3(0.0f,1.0f,0.0f));
+                vec3(0.0f,0.0f,-5.0f),
+                vec3(0.0f,0.0f,0.0f),
+                vec3(0.0f,1.0f,0.0f));
 
 	glMatrixMode(GL_PROJECTION); //W³¹cz tryb modyfikacji macierzy rzutowania
 	glLoadMatrixf(value_ptr(P)); //Skopiuj macierz rzutowania
 	glMatrixMode(GL_MODELVIEW); //W³¹cz tryb modyfikacji macierzy model-widok. UWAGA! Macierz ta bêdzie ³adowana przed narysowaniem ka¿dego modelu
 
+    float amb[]={0.5,0.5,0.5,1};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb );
 
-    //rysowanie prętu gora (tego elementu przyczepionego do tłoka z góry i wału z dołu)
+    float dif[]={0.5,0.5,0.5,1};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif );
+
+    float spec[]={0.5,0.5,0.5,1};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec );
+
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50 );
+
+    //rysowanie korbowodu gora (tego elementu przyczepionego do tłoka z góry i wału z dołu)
     glBindTexture(GL_TEXTURE_2D,tex);
     glColor4f(0,1,1,1);
     mat4 M,R,T,S,I,R2,R1;// definiujemy potrzebne zmienne
@@ -199,24 +202,21 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
     S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
-	R=rotate(R,oblicz_stopnie(0.88, dane_f[0]),vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
+	R=rotate(R,oblicz_stopnie(1, dane_f[0]),vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
 	M=R*T*S; // wymnażanie macierzy, od prawej
 
-    oblicz_stopnie(1,dane_f[0]);
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	rod -> drawSolid();
 
-
-	    //rysowanie prętu dol (tego elementu przyczepionego do tłoka z góry i wału z dołu)
+    //rysowanie korbowodu dol (tego elementu przyczepionego do tłoka z góry i wału z dołu)
     I = mat4(1);
     T = translate(I,vec3(-dane_f[0],-dane_f[1],0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
     S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
-	R=rotate(R,-oblicz_stopnie(0.88, dane_f[0]),vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
-	M=R*T*S; // wymnażanie macierzy, od prawej
+	R=rotate(R,-oblicz_stopnie(0.92, dane_f[0]),vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
+	M=R*T*S; // wymnażanie macierzy, od p0.92rawej
 
-    oblicz_stopnie(1,dane_f[0]);
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	rod1 -> drawSolid();
 
@@ -233,7 +233,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	piston -> drawSolid();
 
-		//rysowanie tłoka dol
+    //rysowanie tłoka dol
 	glColor4f(1,0,1,1);
     I = mat4(1);
     T = translate(I,vec3(0,-dane_f[1],0)); //tłok porusza się ruchem góra dół dzięki dane_f[1]

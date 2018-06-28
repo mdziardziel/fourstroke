@@ -4,25 +4,22 @@
 	<ActiveTarget name="Debug" />
 	<File name="main.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="8506" topLine="197" />
+			<Cursor1 position="6782" topLine="84" />
 		</Cursor>
 		<Folding>
-			<Collapse line="248" />
+			<Collapse line="51" />
+			<Collapse line="63" />
+			<Collapse line="76" />
+			<Collapse line="82" />
+			<Collapse line="87" />
+			<Collapse line="104" />
+			<Collapse line="124" />
+			<Collapse line="157" />
 		</Folding>
 	</File>
-	<File name="class_template.hpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="objloader.hpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="146" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="class_template.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="376" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="lodepng.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="217553" topLine="5930" />
+			<Cursor1 position="43" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="constants.hpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -30,9 +27,19 @@
 			<Cursor1 position="121" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="objloader.hpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="lodepng.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="43" topLine="0" />
+			<Cursor1 position="217553" topLine="5930" />
+		</Cursor>
+	</File>
+	<File name="class_template.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="994" topLine="8" />
+		</Cursor>
+	</File>
+	<File name="class_template.hpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="146" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

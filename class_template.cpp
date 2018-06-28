@@ -23,6 +23,7 @@ void Template::drawSolid() { //metoda rysuj¹ca modele
     //glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
 }
 
 
