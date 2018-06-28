@@ -113,7 +113,7 @@ void move_circle(float &x, float &y, bool &valve_move, float &st360, bool &valve
 
     if(st360==270) //jeśli obrót ma więcej niż 90 stopni to co drugi obrót wału umożliwiamy zaworom otwarcie
         valve_move = !valve_move;
-    if(st360==270) //jeśli obrót ma więcej niż 90 stopni to co drugi obrót wału umożliwiamy zaworom otwarcie
+    if(st360==90) //jeśli obrót ma więcej niż 90 stopni to co drugi obrót wału umożliwiamy zaworom otwarcie
         valve_move2 = !valve_move2;
 
     y = std::sin(st360*PI/180)*promien; // obliczamy x i y z cos i sin dla pręta
@@ -394,9 +394,9 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 
 
 	rysuj_zaw_sw1(window, angle_x,angle_y,dane_f,dane_b,1);
-	rysuj_zaw_sw2(window,angle_x,angle_y,dane_f,dane_b,-1.3);
+	rysuj_zaw_sw1(window,angle_x,angle_y,dane_f,dane_b,-1.3);
 	rysuj_zaw_sw2(window,angle_x,angle_y,dane_f,dane_b,0.2);
-	rysuj_zaw_sw1(window,angle_x,angle_y,dane_f,dane_b,-0.5);
+	rysuj_zaw_sw2(window,angle_x,angle_y,dane_f,dane_b,-0.5);
 
 	//rysowanie świecy
     I = mat4(1);
