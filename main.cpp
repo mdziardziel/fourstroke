@@ -37,7 +37,7 @@ using namespace glm;
 float aspect=1;
 float speed=3.14; //prêdkoœæ k¹towa obrotu w radianach na sekundê
 float speed_x = 0, speed_y = 0;
-GLuint tex; //Globalnie
+GLuint tex[2];
 
 //deklarujemy obiekty Template, każdy obiekt ma w sobie potrzebne wektory i metodę tworzenia przedmiotu
 Template *mushroom;
@@ -131,6 +131,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 
     glClearColor(0,0,0,1); //Ustaw kolor czyszczenia bufora kolorów na czarno
 
+//************Tekstury************
+
     std::vector<unsigned char> image;   //Alokuj wektor do wczytania obrazka
     unsigned width, height;   //Zmienne do których wczytamy wymiary obrazka
 
@@ -138,8 +140,8 @@ void initOpenGLProgram(GLFWwindow* window) {
     unsigned error = lodepng::decode(image, width, height, "metal.png");
 
     //Import do pamięci karty graficznej
-    glGenTextures(1,&tex); //Zainicjuj jeden uchwyt
-    glBindTexture(GL_TEXTURE_2D, tex); //Uaktywnij uchwyt
+    glGenTextures(2,tex); //Zainicjuj dwa uchwyty
+    glBindTexture(GL_TEXTURE_2D, tex[0]); //Uaktywnij uchwyt
 
     //Wczytaj obrazek do pamięci KG skojarzonej z uchwytem
     glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image.data());
@@ -147,16 +149,19 @@ void initOpenGLProgram(GLFWwindow* window) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_NORMALIZE);
-    glEnable(GL_LIGHTING); //Włącz cieniowanie
-    glEnable(GL_LIGHT0); //Włącz światło numer 0
-    glEnable(GL_LIGHT1);
-    glEnable(GL_DEPTH_TEST); //W³¹#define M_PI 3.14159265358979323846cz bufor g³êbokoœci
-//    glEnable(GL_COLOR_MATERIAL); //W³¹cz ustawianie koloru materia³u przez polecenia glColor
 
-//*****Światła*****
+    error = lodepng::decode(image, width, height, "gold.png");
 
+    //Import do pamięci karty graficznej
+    glBindTexture(GL_TEXTURE_2D, tex[1]); //Uaktywnij uchwyt
+
+    //Wczytaj obrazek do pamięci KG skojarzonej z uchwytem
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image.data());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+//************Światła************
 
 //*****Światło 0*****
     float pos0[] = {2,2,1,0};
@@ -182,7 +187,7 @@ void initOpenGLProgram(GLFWwindow* window) {
     glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45);
 
 
-    //Cieniowanie
+//************Cieniowanie************
     float amb[]={0.5,0.5,0.5,1};
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb );
 
@@ -193,6 +198,16 @@ void initOpenGLProgram(GLFWwindow* window) {
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec );
 
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50 );
+
+
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_NORMALIZE);
+    glEnable(GL_LIGHTING); //Włącz cieniowanie
+    glEnable(GL_LIGHT0); //Włącz światło numer 0
+    glEnable(GL_LIGHT1);
+    glEnable(GL_DEPTH_TEST); //W³¹#define M_PI 3.14159265358979323846cz bufor g³êbokoœci
+//    glEnable(GL_COLOR_MATERIAL); //W³¹cz ustawianie koloru materia³u przez polecenia glColor
 }
 
 
@@ -223,35 +238,11 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	glLoadMatrixf(value_ptr(P)); //Skopiuj macierz rzutowania
 	glMatrixMode(GL_MODELVIEW); //W³¹cz tryb modyfikacji macierzy model-widok. UWAGA! Macierz ta bêdzie ³adowana przed narysowaniem ka¿dego modelu
 
-    //rysowanie korbowodu gora (tego elementu przyczepionego do tłoka z góry i wału z dołu)
-    glBindTexture(GL_TEXTURE_2D,tex);
     glColor4f(0,1,1,1);
     mat4 M,R,T,S,I,R2,R1;// definiujemy potrzebne zmienne
-    I = mat4(1);
-    T = translate(I,vec3(dane_f[0],dane_f[1],0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
-    S = scale(I,vec3(0.25,0.25,0.25));
-    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
-	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
-	R=rotate(R,oblicz_stopnie(1, dane_f[0]),vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
-	M=R*T*S; // wymnażanie macierzy, od prawej
-
-	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
-	rod -> drawSolid();
-
-    //rysowanie korbowodu dol (tego elementu przyczepionego do tłoka z góry i wału z dołu)
-    I = mat4(1);
-    T = translate(I,vec3(-dane_f[0],-dane_f[1],0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
-    S = scale(I,vec3(0.25,0.25,0.25));
-    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
-	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
-	R=rotate(R,-oblicz_stopnie(0.92, dane_f[0]),vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
-	M=R*T*S; // wymnażanie macierzy, od p0.92rawej
-
-	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
-	rod1 -> drawSolid();
-
 
 	//rysowanie tłoka gora
+	glBindTexture(GL_TEXTURE_2D,tex[1]);
 	glColor4f(1,0,1,1);
     I = mat4(1);
     T = translate(I,vec3(0,dane_f[1],0)); //tłok porusza się ruchem góra dół dzięki dane_f[1]
@@ -275,6 +266,31 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	piston1 -> drawSolid();
 
+
+    //rysowanie korbowodu gora (tego elementu przyczepionego do tłoka z góry i wału z dołu)
+    glBindTexture(GL_TEXTURE_2D,tex[0]);
+    I = mat4(1);
+    T = translate(I,vec3(dane_f[0],dane_f[1],0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
+    S = scale(I,vec3(0.25,0.25,0.25));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
+	R=rotate(R,oblicz_stopnie(1, dane_f[0]),vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
+	M=R*T*S; // wymnażanie macierzy, od prawej
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	rod -> drawSolid();
+
+    //rysowanie korbowodu dol (tego elementu przyczepionego do tłoka z góry i wału z dołu)
+    I = mat4(1);
+    T = translate(I,vec3(-dane_f[0],-dane_f[1],0)); //przesuwamy w odpowiednie miejsce (pręt porusza się ruchem okrężym za pomocą dane_f[0],dane_f[1])
+    S = scale(I,vec3(0.25,0.25,0.25));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
+	R=rotate(R,-oblicz_stopnie(0.92, dane_f[0]),vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
+	M=R*T*S; // wymnażanie macierzy, od p0.92rawej
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	rod1 -> drawSolid();
 
 /*
 	//rysowanie świecy
@@ -403,7 +419,7 @@ int main(void)
 		drawScene(window,angle_x,angle_y, dane_f, dane_b); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
 	}
-    glDeleteTextures(1,&tex);
+    glDeleteTextures(2,tex);
 	glfwDestroyWindow(window); //Usuñ kontekst OpenGL i okno
 	glfwTerminate(); //Zwolnij zasoby zajête przez GLFW
 	exit(EXIT_SUCCESS);

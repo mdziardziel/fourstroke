@@ -2,6 +2,25 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
+	<File name="class_template.hpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="146" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="main.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4767" topLine="90" />
+		</Cursor>
+		<Folding>
+			<Collapse line="64" />
+			<Collapse line="77" />
+			<Collapse line="83" />
+			<Collapse line="88" />
+			<Collapse line="105" />
+			<Collapse line="213" />
+			<Collapse line="366" />
+		</Folding>
+	</File>
 	<File name="objloader.hpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="43" topLine="0" />
@@ -9,34 +28,20 @@
 	</File>
 	<File name="class_template.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="994" topLine="0" />
+			<Cursor1 position="862" topLine="0" />
 		</Cursor>
-	</File>
-	<File name="class_template.hpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="146" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="lodepng.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="217553" topLine="5930" />
-		</Cursor>
+		<Folding>
+			<Collapse line="8" />
+		</Folding>
 	</File>
 	<File name="constants.hpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="121" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="main.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="lodepng.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="5860" topLine="131" />
+			<Cursor1 position="217553" topLine="5930" />
 		</Cursor>
-		<Folding>
-			<Collapse line="51" />
-			<Collapse line="63" />
-			<Collapse line="76" />
-			<Collapse line="82" />
-			<Collapse line="87" />
-		</Folding>
 	</File>
 </CodeBlocks_layout_file>
