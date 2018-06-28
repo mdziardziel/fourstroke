@@ -133,30 +133,31 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 //************Tekstury************
 
-    std::vector<unsigned char> image1, image2;   //Alokuj wektor do wczytania obrazka
+    std::vector<unsigned char> image;   //Alokuj wektor do wczytania obrazka
     unsigned width, height;   //Zmienne do których wczytamy wymiary obrazka
 
     //Wczytaj obrazek
-    unsigned error = lodepng::decode(image1, width, height, "metal.png");
+    unsigned error = lodepng::decode(image, width, height, "metal.png");
 
     //Import do pamięci karty graficznej
     glGenTextures(2,tex); //Zainicjuj dwa uchwyty
     glBindTexture(GL_TEXTURE_2D, tex[0]); //Uaktywnij uchwyt
 
     //Wczytaj obrazek do pamięci KG skojarzonej z uchwytem
-    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image1.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image.data());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
-    error = lodepng::decode(image2, width, height, "gold.png");
+    error = lodepng::decode(image, width, height, "gold.png");
 
     //Import do pamięci karty graficznej
     glBindTexture(GL_TEXTURE_2D, tex[1]); //Uaktywnij uchwyt
 
+    image.clear();
     //Wczytaj obrazek do pamięci KG skojarzonej z uchwytem
-    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image2.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image.data());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -221,6 +222,64 @@ float oblicz_stopnie(float el, float iks){
     return gamma;
 }
 
+
+void rysuj_zaw_sw(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, bool *dane_b, float odl, int zaw){
+	mat4 V=lookAt( //Wylicz macierz widoku
+                vec3(0.0f,1.25f,-5.0f),
+                vec3(0.0f,0.0f,0.0f),
+                vec3(0.0f,1.0f,0.0f));
+
+	//rysowanie świecy
+     mat4 M,R,T,S,I,R2,R1;
+    I = mat4(1);
+    T = translate(I,vec3(0,1.55,odl));
+    S = scale(I,vec3(0.2,0.2,0.2));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	M=R*T*S;
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	glow -> drawSolid();
+
+    //rysowanie zaworu po prawej
+    glColor4f(1,1,0,1);
+    I = mat4(1);
+    if(dane_b[2] && dane_f[0] < 0) //zawór po prawej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w dół(dzięki dane_f[0] < 0) ponieważ zasysa powietrze
+        if(dane_f[1]<0)// tutaj są obliczenia przeliczające ruch pręta na ruch zaworu, dopasowane empirycznie tak, aby to jakoś wyglądało
+            T = translate(I,vec3((dane_f[0])*0.025+0.25,-(dane_f[1]+1)*0.05 + 1.55,odl));
+        else
+            T = translate(I,vec3((dane_f[0])*0.025+0.25,(dane_f[1]-1)*0.05 + 1.55,odl));
+    else
+        T = translate(I,vec3(0.25,1.55,odl));
+    S = scale(I,vec3(0.15,0.15,0.15));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	R=rotate(R,15*PI/180,vec3(0,0,1)); //obracamy o te 15 stopni w prawo
+	M=R*T*S;
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	valve -> drawSolid();
+
+	//rysowanie zaworu po lewej
+	glColor4f(1,1,0,1);
+    I = mat4(1);
+    if(dane_b[2] && dane_f[0] > 0) //zawór po lewej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w górę(dzięki dane_f[0] > 0) ponieważ wychodzą nim spaliny
+        if(dane_f[1]<0)
+            T = translate(I,vec3((dane_f[0])*0.025-0.25,-(dane_f[1]+1)*0.05 + 1.55,odl));
+        else
+            T = translate(I,vec3((dane_f[0])*0.025-0.25,(dane_f[1]-1)*0.05 + 1.55,odl));
+    else
+        T = translate(I,vec3(-0.25,1.55,odl));
+    S = scale(I,vec3(0.15,0.15,0.15));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	R=rotate(R,-15*PI/180,vec3(0,0,1)); // obracamy o 15 stopni w lewo
+	M=R*T*S;
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	valve -> drawSolid();
+}
+
 //Procedura rysuj¹ca zawartoœæ sceny
 void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, bool *dane_b) {
 	//************Tutaj umieszczaj kod rysuj¹cy obraz******************
@@ -245,7 +304,7 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	glBindTexture(GL_TEXTURE_2D,tex[1]);
 	glColor4f(1,0,1,1);
     I = mat4(1);
-    T = translate(I,vec3(0,dane_f[1],0)); //tłok porusza się ruchem góra dół dzięki dane_f[1]
+    T = translate(I,vec3(0,dane_f[1],-0.1)); //tłok porusza się ruchem góra dół dzięki dane_f[1]
     S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
@@ -292,57 +351,14 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	rod1 -> drawSolid();
 
-/*
-	//rysowanie świecy
-	glColor4f(1,0.5,0.5,1);
-    I = mat4(1);
-    T = translate(I,vec3(0,1.55,-1.15));
-    S = scale(I,vec3(0.2,0.2,0.2));
-    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
-	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
-	M=R*T*S;
 
-	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
-	glow -> drawSolid();
 
-    //rysowanie zaworu po prawej
-    glColor4f(1,1,0,1);
-    I = mat4(1);
-    if(dane_b[2] && dane_f[0] < 0) //zawór po prawej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w dół(dzięki dane_f[0] < 0) ponieważ zasysa powietrze
-        if(dane_f[1]<0)// tutaj są obliczenia przeliczające ruch pręta na ruch zaworu, dopasowane empirycznie tak, aby to jakoś wyglądało
-            T = translate(I,vec3((dane_f[0])*0.025+0.15,-(dane_f[1]+1)*0.05 + 1.03,0));
-        else
-            T = translate(I,vec3((dane_f[0])*0.025+0.15,(dane_f[1]-1)*0.05 + 1.03,0));
-    else
-        T = translate(I,vec3(0.15,1.03,0));
-    S = scale(I,vec3(0.15,0.15,0.15));
-    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
-	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
-	R=rotate(R,15*PI/180,vec3(0,0,1)); //obracamy o te 15 stopni w prawo
-	M=R*T*S;
 
-	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
-	valve -> drawSolid();
+	rysuj_zaw_sw(window, angle_x,angle_y,dane_f,dane_b,1,1);
+	rysuj_zaw_sw(window,angle_x,angle_y,dane_f,dane_b,-1.3,-1);
+	rysuj_zaw_sw(window,angle_x,angle_y,dane_f,dane_b,0.2,-1);
+	rysuj_zaw_sw(window,angle_x,angle_y,dane_f,dane_b,-0.5,1);
 
-	//rysowanie zaworu po lewej
-	glColor4f(1,1,0,1);
-    I = mat4(1);
-    if(dane_b[2] && dane_f[0] > 0) //zawór po lewej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w górę(dzięki dane_f[0] > 0) ponieważ wychodzą nim spaliny
-        if(dane_f[1]<0)
-            T = translate(I,vec3((dane_f[0])*0.025-0.12,-(dane_f[1]+1)*0.05 + 1.03,0));
-        else
-            T = translate(I,vec3((dane_f[0])*0.025-0.12,(dane_f[1]-1)*0.05 + 1.03,0));
-    else
-        T = translate(I,vec3(-0.12,1.03,0));
-    S = scale(I,vec3(0.15,0.15,0.15));
-    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
-	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
-	R=rotate(R,-15*PI/180,vec3(0,0,1)); // obracamy o 15 stopni w lewo
-	M=R*T*S;
-
-	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
-	valve -> drawSolid();
-*/
 
     //rysowanie wału korbowego
     glColor4f(1,0,0,1);
