@@ -150,8 +150,29 @@ void initOpenGLProgram(GLFWwindow* window) {
     glEnable(GL_NORMALIZE);
     glEnable(GL_LIGHTING); //Włącz cieniowanie
     glEnable(GL_LIGHT0); //Włącz światło numer 0
+    glEnable(GL_LIGHT1);
     glEnable(GL_DEPTH_TEST); //W³¹#define M_PI 3.14159265358979323846cz bufor g³êbokoœci
     //glEnable(GL_COLOR_MATERIAL); //W³¹cz ustawianie koloru materia³u przez polecenia glColor
+
+    float pos[] = {1,1,1,0};
+    glLightfv(GL_LIGHT1, GL_POSITION, pos);
+
+    //float dir[] = {}
+
+
+
+
+    //Cieniowanie
+    float amb[]={0.5,0.5,0.5,1};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb );
+
+    float dif[]={0.5,0.5,0.5,1};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif );
+
+    float spec[]={0.5,0.5,0.5,1};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec );
+
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50 );
 }
 
 
@@ -174,24 +195,13 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 	//Przygotuj macierze rzutowania i widoku dla renderowanego obrazu
 	mat4 P= perspective(50.0f*PI/180.0f,1.0f,1.0f, 50.0f); //Wylicz macierz rzutowania
 	mat4 V=lookAt( //Wylicz macierz widoku
-                vec3(0.0f,0.0f,-5.0f),
+                vec3(0.0f,1.15f,-5.0f),
                 vec3(0.0f,0.0f,0.0f),
                 vec3(0.0f,1.0f,0.0f));
 
 	glMatrixMode(GL_PROJECTION); //W³¹cz tryb modyfikacji macierzy rzutowania
 	glLoadMatrixf(value_ptr(P)); //Skopiuj macierz rzutowania
 	glMatrixMode(GL_MODELVIEW); //W³¹cz tryb modyfikacji macierzy model-widok. UWAGA! Macierz ta bêdzie ³adowana przed narysowaniem ka¿dego modelu
-
-    float amb[]={0.5,0.5,0.5,1};
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb );
-
-    float dif[]={0.5,0.5,0.5,1};
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif );
-
-    float spec[]={0.5,0.5,0.5,1};
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec );
-
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50 );
 
     //rysowanie korbowodu gora (tego elementu przyczepionego do tłoka z góry i wału z dołu)
     glBindTexture(GL_TEXTURE_2D,tex);
@@ -330,7 +340,7 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	window = glfwCreateWindow(800, 800, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
+	window = glfwCreateWindow(600, 600, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 
 	if (!window) //Je¿eli okna nie uda³o siê utworzyæ, to zamknij program
@@ -350,7 +360,7 @@ int main(void)
 
 	initOpenGLProgram(window); //Operacje inicjuj¹ce
 
-	float angle=0; //Aktualny k¹t obrotu obiektu
+
 	glfwSetTime(0); //Wyzeruj licznik czasu
 
 	float angle_x = 0, angle_y = 0;
