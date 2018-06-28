@@ -103,7 +103,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
-void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve_move, float &st360){
+void move_circle(float &x, float &y, bool &valve_move, float &st360, bool &valve_move2){
     float spd = 3; //podajemy prędkość obrotu0.9188325
     float promien = 0.28; //podajemy promień obrotu prętu
 
@@ -113,6 +113,8 @@ void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve
 
     if(st360==270) //jeśli obrót ma więcej niż 90 stopni to co drugi obrót wału umożliwiamy zaworom otwarcie
         valve_move = !valve_move;
+    if(st360==270) //jeśli obrót ma więcej niż 90 stopni to co drugi obrót wału umożliwiamy zaworom otwarcie
+        valve_move2 = !valve_move2;
 
     y = std::sin(st360*PI/180)*promien; // obliczamy x i y z cos i sin dla pręta
     x = std::cos(st360*PI/180)*promien;
@@ -149,13 +151,13 @@ void initOpenGLProgram(GLFWwindow* window) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-
+    image.clear();
     error = lodepng::decode(image, width, height, "gold.png");
 
     //Import do pamięci karty graficznej
     glBindTexture(GL_TEXTURE_2D, tex[1]); //Uaktywnij uchwyt
 
-    image.clear();
+
     //Wczytaj obrazek do pamięci KG skojarzonej z uchwytem
     glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*) image.data());
 
@@ -223,7 +225,7 @@ float oblicz_stopnie(float el, float iks){
 }
 
 
-void rysuj_zaw_sw(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, bool *dane_b, float odl, int zaw){
+void rysuj_zaw_sw2(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, bool *dane_b, float odl, bool zaw){
 	mat4 V=lookAt( //Wylicz macierz widoku
                 vec3(0.0f,1.25f,-5.0f),
                 vec3(0.0f,0.0f,0.0f),
@@ -244,7 +246,7 @@ void rysuj_zaw_sw(GLFWwindow* window,float angle_x, float angle_y, float *dane_f
     //rysowanie zaworu po prawej
     glColor4f(1,1,0,1);
     I = mat4(1);
-    if(dane_b[2] && dane_f[0] < 0) //zawór po prawej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w dół(dzięki dane_f[0] < 0) ponieważ zasysa powietrze
+    if(dane_b[1]  && dane_f[0] > 0) //zawór po prawej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w dół(dzięki dane_f[0] < 0) ponieważ zasysa powietrze
         if(dane_f[1]<0)// tutaj są obliczenia przeliczające ruch pręta na ruch zaworu, dopasowane empirycznie tak, aby to jakoś wyglądało
             T = translate(I,vec3((dane_f[0])*0.025+0.25,-(dane_f[1]+1)*0.05 + 1.55,odl));
         else
@@ -263,8 +265,65 @@ void rysuj_zaw_sw(GLFWwindow* window,float angle_x, float angle_y, float *dane_f
 	//rysowanie zaworu po lewej
 	glColor4f(1,1,0,1);
     I = mat4(1);
-    if(dane_b[2] && dane_f[0] > 0) //zawór po lewej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w górę(dzięki dane_f[0] > 0) ponieważ wychodzą nim spaliny
+    if(dane_b[1] && dane_f[0] < 0) //zawór po lewej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w górę(dzięki dane_f[0] > 0) ponieważ wychodzą nim spaliny
         if(dane_f[1]<0)
+            T = translate(I,vec3((dane_f[0])*0.025-0.25,-(dane_f[1]+1)*0.05 + 1.55,odl));
+        else
+            T = translate(I,vec3((dane_f[0])*0.025-0.25,(dane_f[1]-1)*0.05 + 1.55,odl));
+    else
+        T = translate(I,vec3(-0.25,1.55,odl));
+    S = scale(I,vec3(0.15,0.15,0.15));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	R=rotate(R,-15*PI/180,vec3(0,0,1)); // obracamy o 15 stopni w lewo
+	M=R*T*S;
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	valve -> drawSolid();
+}
+
+void rysuj_zaw_sw1(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, bool *dane_b, float odl, bool zaw){
+	mat4 V=lookAt( //Wylicz macierz widoku
+                vec3(0.0f,1.25f,-5.0f),
+                vec3(0.0f,0.0f,0.0f),
+                vec3(0.0f,1.0f,0.0f));
+
+	//rysowanie świecy
+     mat4 M,R,T,S,I,R2,R1;
+    I = mat4(1);
+    T = translate(I,vec3(0,1.55,odl));
+    S = scale(I,vec3(0.2,0.2,0.2));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	M=R*T*S;
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	glow -> drawSolid();
+
+    //rysowanie zaworu po prawej
+    glColor4f(1,1,0,1);
+    I = mat4(1);
+    if(dane_b[2]  && dane_f[0] < 0) //zawór po prawej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w dół(dzięki dane_f[0] < 0) ponieważ zasysa powietrze
+        if(zaw && dane_f[1]<0)// tutaj są obliczenia przeliczające ruch pręta na ruch zaworu, dopasowane empirycznie tak, aby to jakoś wyglądało
+            T = translate(I,vec3((dane_f[0])*0.025+0.25,-(dane_f[1]+1)*0.05 + 1.55,odl));
+        else
+            T = translate(I,vec3((dane_f[0])*0.025+0.25,(dane_f[1]-1)*0.05 + 1.55,odl));
+    else
+        T = translate(I,vec3(0.25,1.55,odl));
+    S = scale(I,vec3(0.15,0.15,0.15));
+    R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f));
+	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f));
+	R=rotate(R,15*PI/180,vec3(0,0,1)); //obracamy o te 15 stopni w prawo
+	M=R*T*S;
+
+	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
+	valve -> drawSolid();
+
+	//rysowanie zaworu po lewej
+	glColor4f(1,1,0,1);
+    I = mat4(1);
+    if(dane_b[2] && dane_f[0] > 0) //zawór po lewej porusza się góra dół pod kontem 15 stopni co drugi obrót wału( dzięki dane_b[2) oraz tylko gdy tłok idzie w górę(dzięki dane_f[0] > 0) ponieważ wychodzą nim spaliny
+        if(zaw  && dane_f[1]<0)
             T = translate(I,vec3((dane_f[0])*0.025-0.25,-(dane_f[1]+1)*0.05 + 1.55,odl));
         else
             T = translate(I,vec3((dane_f[0])*0.025-0.25,(dane_f[1]-1)*0.05 + 1.55,odl));
@@ -354,10 +413,10 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
 
 
 
-	rysuj_zaw_sw(window, angle_x,angle_y,dane_f,dane_b,1,1);
-	rysuj_zaw_sw(window,angle_x,angle_y,dane_f,dane_b,-1.3,-1);
-	rysuj_zaw_sw(window,angle_x,angle_y,dane_f,dane_b,0.2,-1);
-	rysuj_zaw_sw(window,angle_x,angle_y,dane_f,dane_b,-0.5,1);
+	rysuj_zaw_sw1(window, angle_x,angle_y,dane_f,dane_b,1,false);
+	rysuj_zaw_sw2(window,angle_x,angle_y,dane_f,dane_b,-1.3,false);
+	rysuj_zaw_sw2(window,angle_x,angle_y,dane_f,dane_b,0.2,true);
+	rysuj_zaw_sw1(window,angle_x,angle_y,dane_f,dane_b,-0.5,true);
 
 
     //rysowanie wału korbowego
@@ -418,17 +477,18 @@ int main(void)
 	float angle_x = 0, angle_y = 0;
 	float rod_x = 0, rod_y = 0;
 	float st360 = 90;
-	bool rod_cx = true, rod_cy = true, valve_move = true;
+	bool valve_move2 = false, valve_move = true;
 	float dane_f[3]; //pakujemy wszystko w tablice, żeby było wygodniej
 	bool dane_b[3];
 	//G³ówna pêtla
 	while (!glfwWindowShouldClose(window)) //Tak d³ugo jak okno nie powinno zostaæ zamkniête
 	{
-	    move_circle(rod_x, rod_y, rod_cx, rod_cy, valve_move, st360);
+	    move_circle(rod_x, rod_y, valve_move, st360,valve_move2);
         dane_f[0] = rod_x; //przesunięcie pręta x
         dane_f[1] = rod_y; //przesunięcie pręta y
         dane_f[2] = st360; //ilość stopni do obrotu wału
         dane_b[2] = valve_move; // określa czy zawory mogą się poruszyć
+        dane_b[1] = valve_move2; // określa czy zawory mogą się poruszyć
 	    angle_x+=speed_x*glfwGetTime(); //Oblicz przyrost kąta obrotu i zwiększ aktualny kąt
         angle_y+=speed_y*glfwGetTime(); //Oblicz przyrost kąta obrotu i zwiększ aktualny kąt
 	    glfwSetTime(0); //Wyzeruj timer
