@@ -54,9 +54,9 @@ void initObjects(){
     //inicjalzujemy obiekty Template (wgrywamy tekstury, kolory itp)
     mushroom = new Template("objects\\mushroom.obj");
     rod = new Template("objects\\x_prety_g1.obj");
-    piston = new Template("objects\\x_tloki_g1.obj");
+    piston = new Template("objects\\x_rurka_tlok_g1.obj");
     rod1 = new Template("objects\\x_prety_d1.obj");
-    piston1 = new Template("objects\\x_tloki_d1.obj");
+    piston1 = new Template("objects\\x_rurka_tlok_d1.obj");
     glow = new Template("objects\\glow.obj");
     valve = new Template("objects\\valve.obj");
     crankshaft = new Template("objects\\x_wal.obj");
