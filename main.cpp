@@ -101,7 +101,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 
 void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve_move, float &st360){
-    float spd = 3; //podajemy prędkość obrotu
+    float spd = 0.5; //podajemy prędkość obrotu
     float promien = 0.28; //podajemy promień obrotu prętu
 
     st360 = st360 + spd;
@@ -116,7 +116,7 @@ void move_circle(float &x, float &y, bool &course_x, bool &course_y, bool &valve
     if(st360==90)x = 0;
     if(st360==270)x = 0;
 
-    //std::cout<<x<<" "<<x<<std::endl;
+    //std::cout<<x<<" "<<y<<std::endl;
 }
 
 
@@ -131,7 +131,7 @@ void initOpenGLProgram(GLFWwindow* window) {
     glClearColor(0,0,0,1); //Ustaw kolor czyszczenia bufora kolorów na czarno
     glEnable(GL_LIGHTING); //W³¹cz cieniowanie
     glEnable(GL_LIGHT0); //W³¹cz œwia³o numer 0
-    glEnable(GL_DEPTH_TEST); //W³¹cz bufor g³êbokoœci
+    glEnable(GL_DEPTH_TEST); //W³¹#define M_PI 3.14159265358979323846cz bufor g³êbokoœci
     //glEnable(GL_COLOR_MATERIAL); //W³¹cz ustawianie koloru materia³u przez polecenia glColor
     glEnable(GL_NORMALIZE);
     std::vector<unsigned char> image;   //Alokuj wektor do wczytania obrazka
@@ -155,6 +155,15 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 
 
+float oblicz_stopnie(float el, float iks){
+    float sinb = iks/el;
+    float beta = std::asin(sinb);
+    float alfa = PI/2 - beta;
+    float gamma = PI/2 - alfa;
+    float wyn = gamma*180/PI;
+    //std::cout<<wyn<<std::endl;
+    return gamma;
+}
 
 
 //Procedura rysuj¹ca zawartoœæ sceny
@@ -184,9 +193,10 @@ void drawScene(GLFWwindow* window,float angle_x, float angle_y, float *dane_f, b
     S = scale(I,vec3(0.25,0.25,0.25));
     R=rotate(I,angle_x,vec3(1.0f,0.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
 	R=rotate(R,-angle_y,vec3(0.0f,1.0f,0.0f)); //obracanie modelem, żeby można było zobaczyć z każdej strony
-	R=rotate(R,dane_f[0],vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
+	R=rotate(R,oblicz_stopnie(0.88, dane_f[0]),vec3(0,0,1)); //obracanie lekko w prawo i lewo żeby zasymulować prawdziwy ruch
 	M=R*T*S; // wymnażanie macierzy, od prawej
 
+    oblicz_stopnie(1,dane_f[0]);
 	glLoadMatrixf(value_ptr(V*M)); //Za³aduj macierz model-widok
 	rod -> drawSolid();
 
